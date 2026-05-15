@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Thi Thử Tiếng Nga K66 - PRO MAX</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; margin: 0; padding: 0; }
+        .header-sticky { position: fixed; top: 0; left: 0; right: 0; background: #1a365d; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .timer-box { font-size: 22px; font-weight: bold; color: #fbd38d; background: #2a4365; padding: 5px 15px; border-radius: 5px; }
+        .header-btns button { border: none; padding: 10px 15px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-left: 10px; transition: 0.2s; }
+        .btn-new { background-color: #38a169; color: white; }
+        .btn-new:hover { background-color: #2f855a; }
+        .btn-history { background-color: #ecc94b; color: #744210; }
+        .btn-history:hover { background-color: #d69e2e; }
+
+        .main-content { padding: 90px 20px 40px 20px; max-width: 900px; margin: 0 auto; }
+        h1, h2 { text-align: center; color: #2d3748; }
+        
+        #score-display { background: #ebf8ff; border: 2px solid #3182ce; padding: 20px; text-align: center; border-radius: 10px; margin-bottom: 20px; display: none; }
+        #score-display h1 { color: #e53e3e; font-size: 36px; margin: 10px 0; }
+        
+        .section-title { background: #2b6cb0; color: white; padding: 12px; border-radius: 6px; margin-top: 35px; text-transform: uppercase; }
+        
+        .question-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; border-left: 5px solid #3182ce; }
+        .question-title { font-weight: 600; font-size: 17px; margin-bottom: 15px; color: #2d3748; }
+        
+        /* Chỉnh style cho thẻ Ảnh và Audio */
+        .question-image { max-width: 100%; height: auto; max-height: 300px; margin: 10px 0; border-radius: 6px; border: 1px solid #e2e8f0; display: block; }
+        .audio-player { width: 100%; margin: 15px 0; }
+        
+        .reading-text-box { background: #fffaf0; border: 1px solid #ecc94b; padding: 15px; border-radius: 6px; font-size: 16px; margin-bottom: 20px; max-height: 350px; overflow-y: auto; text-align: justify; }
+        
+        .options-list { list-style-type: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        @media (max-width: 600px) { .options-list { grid-template-columns: 1fr; } }
+        .option-btn { width: 100%; text-align: left; background: #edf2f7; border: 2px solid #e2e8f0; padding: 12px; border-radius: 6px; cursor: pointer; font-size: 16px; transition: all 0.2s; }
+        .option-btn:hover:not(:disabled) { background: #e2e8f0; }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.9; }
+        
+        .option-btn.selected { background: #ebf8ff; border-color: #3182ce; font-weight: bold; color: #2b6cb0; }
+        .option-btn.correct { background: #c6f6d5 !important; border-color: #48bb78 !important; color: #22543d !important; font-weight: bold; }
+        .option-btn.wrong { background: #fed7d7 !important; border-color: #f56565 !important; color: #742a2a !important; text-decoration: line-through; }
+        .option-btn.show-correct { border: 2px dashed #48bb78 !important; background: #f0fff4; font-weight:bold;}
+
+        .rewrite-input { width: 100%; padding: 12px; font-size: 16px; border: 2px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; }
+        .rewrite-input:disabled { background: #f7fafc; color: #4a5568; }
+        .explanation { margin-top: 15px; padding: 15px; background: #f7fafc; border-radius: 6px; border-left: 4px solid #a0aec0; display: none; font-size: 15px; }
+        
+        .submit-section { text-align: center; margin: 40px 0; }
+        #submit-btn { background-color: #e53e3e; color: white; border: none; padding: 15px 40px; font-size: 20px; font-weight: bold; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.3s; }
+        #submit-btn:hover:not(:disabled) { background-color: #c53030; transform: scale(1.05); }
+        #submit-btn:disabled { background-color: #a0aec0; cursor: not-allowed; }
+
+        #history-view { display: none; }
+        .history-item-btn { width: 100%; background: white; border: 2px solid #3182ce; color: #3182ce; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; text-align: left; margin-bottom: 10px; }
+        .back-btn { background: #4a5568; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
+/* CSS cho Popup nhập tên và Tiêu đề Đề */
+        #start-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .modal-content h2 { color: #2b6cb0; margin-top: 0; font-size: 28px; }
+        .modal-content input { width: 90%; padding: 12px; margin: 20px 0; font-size: 16px; border: 2px solid #3182ce; border-radius: 5px; outline: none; }
+        .modal-content button { background: #e53e3e; color: white; border: none; padding: 12px 25px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; transition: 0.2s; }
+        .modal-content button:hover { background: #c53030; }
+        #header-title { font-size: 18px; font-weight: bold; background: #3182ce; padding: 6px 15px; border-radius: 5px; }
+	/* Nút Cuộn lên đầu trang */
+        #back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #2b6cb0;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            display: none; /* Ẩn mặc định */
+            z-index: 9999;
+            transition: all 0.3s ease;
+        }
+        #back-to-top:hover {
+            background-color: #1a365d;
+            transform: translateY(-5px);
+        }
+/* --- CSS CHO BẢNG THEO DÕI VÀ NÚT CẮM CỜ --- */
+        #question-tracker {
+            position: fixed; left: 20px; top: 90px; width: 230px; background: white; padding: 15px; 
+            border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px solid #e2e8f0;
+            max-height: calc(100vh - 120px); overflow-y: auto; z-index: 900;
+        }
+        .tracker-title { font-weight: bold; text-align: center; margin-bottom: 10px; color: #2b6cb0; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; }
+        .tracker-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+        .tracker-btn { padding: 6px 0; text-align: center; border: 1px solid #cbd5e0; border-radius: 4px; cursor: pointer; background: #edf2f7; font-size: 14px; font-weight: bold; transition: 0.2s; }
+        .tracker-btn:hover { background: #e2e8f0; }
+        .tracker-btn.answered { background: #48bb78; color: white; border-color: #2f855a; }
+        .tracker-btn.flagged { background: #ecc94b !important; color: #744210 !important; border-color: #b7791f !important; border-width: 2px; }
+        
+        .flag-btn { float: right; background: white; border: 1px solid #cbd5e0; border-radius: 5px; padding: 5px 10px; cursor: pointer; color: #4a5568; font-size: 13px; font-weight:bold; transition: 0.2s; }
+        .flag-btn:hover { background: #edf2f7; }
+        .flag-btn.active { background: #fef08a; border-color: #eab308; color: #854d0e; }
+
+       /* --- Tối ưu hiển thị Bảng theo dõi & Bài thi --- */
+        @media (min-width: 1000px) and (max-width: 1450px) {
+            /* Trên màn hình Laptop vừa: Giữ bài thi xích sang phải để không bị đè */
+            .main-content { margin-left: 270px !important; max-width: calc(100vw - 320px) !important; }
+        }
+        @media (max-width: 999px) { 
+            /* Trên Điện thoại/Tablet: Ẩn bảng theo dõi đi cho đỡ vướng */
+            #question-tracker { display: none !important; } 
+        }
+        /* Trên màn hình To (>1450px), bài thi sẽ tự động quay về giữa (margin: 0 auto) cực kỳ cân đối! */
+    </style>
+</head>
+<body>
+    <div id="question-tracker" style="display: none;">
+        <div class="tracker-title">BẢNG CÂU HỎI</div>
+        <div style="font-size:12px; color:#718096; margin-bottom:10px; text-align:center;">
+            (Xanh: Đã làm | Vàng: Đánh dấu)
+        </div>
+        <div class="tracker-grid" id="tracker-grid"></div>
+    </div>
+    <div id="start-modal">
+        <div class="modal-content">
+            <h2 id="modal-title">ĐỀ SỐ 1</h2>
+            <p>Vui lòng nhập họ và tên của bạn để bắt đầu thời gian làm bài:</p>
+            <input type="text" id="student-name" placeholder="Ví dụ: Hà Văn Đô">
+            <br>
+            <button onclick="startQuizAfterName()">BẮT ĐẦU LÀM BÀI</button>
+        </div>
+    </div>
+
+    <div class="header-sticky">
+        <div id="header-title">ĐỀ SỐ 1</div>
+        <div class="timer-box" id="timer-display">120:00</div>
+        <div class="header-btns">
+            <button class="btn-new" onclick="generateNewQuiz()">🔀 Bốc Đề Mới</button>
+            <button class="btn-history" onclick="toggleHistory()">🕒 Lịch Sử</button>
+        </div>
+    </div>
+    <div class="main-content">
+      <div id="quiz-view">
+            <div id="score-display"></div>
+            <div id="quiz-container"></div>
+            <div class="submit-section">
+                <button id="submit-btn" onclick="submitQuiz()">NỘP BÀI & CHẤM ĐIỂM</button>
+            </div>
+	
+        </div>
+        <div id="history-view">
+            <button class="back-btn" onclick="backToQuiz()">⬅ Quay lại Đề Hiện Tại</button>
+            <h2>LỊCH SỬ CÁC LẦN THI</h2>
+            <div id="history-list"></div>
+            <div id="history-detail"></div>
+ 	
+        </div>
+    </div>
+	<button id="back-to-top" onclick="scrollToTop()" title="Lên đầu trang">⬆️</button>
+    <script>
+        // ==========================================
+        // 1. NGÂN HÀNG BÀI NGHE (AUDIO)
+        // Lưu ý: Đổi tên file audioSrc cho khớp với file mp3 bạn tải về máy
+        // ==========================================
+	// --- TRANSCRIPT CHO BÀI NGHE 1 ---
+        const transcript_Bai1 = `
+        <details style="margin-top:10px; background:#edf2f7; padding:10px; border-radius:5px; border-left: 4px solid #4299e1;">
+            <summary style="font-weight:bold; cursor:pointer; color:#2b6cb0;">🎧 Bấm để xem Nội dung & Bản dịch bài nghe</summary>
+            <div style="margin-top:10px; font-size: 15px; line-height: 1.6; color: #2d3748;">
+                <b>🇷🇺 Tiếng Nga:</b><br>
+                — Привет, Антон! Как дела? Ты так много путешествуешь в этом году.<br>
+                — Да, в этом году я был в командировке 2 раза весной.<br>
+                — А летом ты куда-нибудь ездил?<br>
+                — Летом этого года я ездил в Англию.<br>
+                — А осенью?<br>
+                — Осенью я ездил в Швецию.<br>
+                — Там было холодно?<br>
+                — Да, очень холодно. Я забыл тёплые вещи, поэтому в Швеции я купил куртку.<br>
+                — Ты летел туда на самолёте?<br>
+                — Нет, я боюсь летать. Я ездил в Швецию на поезде.<br>
+                — Понятно. А какие планы на зиму?<br>
+                — Зимой я буду дома. День рождения у моей мамы будет в феврале, мы будем праздновать вместе.
+                <hr style="border: 0; border-top: 1px solid #cbd5e0; margin: 12px 0;">
+                <b>🇻🇳 Tiếng Việt:</b><br>
+                — Chào Anton! Dạo này sao rồi? Năm nay cậu đi du lịch nhiều thật đấy.<br>
+                — Ừ, năm nay tớ đi công tác 2 lần vào mùa xuân.<br>
+                — Thế mùa hè cậu có đi đâu không?<br>
+                — Mùa hè năm nay tớ đi Anh.<br>
+                — Còn mùa thu?<br>
+                — Mùa thu tớ đi Thụy Điển.<br>
+                — Ở đó có lạnh không?<br>
+                — Có, rất lạnh. Tớ quên mang đồ ấm nên đã mua một chiếc áo khoác ở Thụy Điển.<br>
+                — Cậu bay đến đó à?<br>
+                — Không, tớ sợ đi máy bay. Tớ đi Thụy Điển bằng tàu hỏa.<br>
+                — Ra vậy. Thế kế hoạch mùa đông là gì?<br>
+                — Mùa đông tớ sẽ ở nhà. Sinh nhật mẹ tớ vào tháng Hai, bọn tớ sẽ tổ chức cùng nhau.
+            </div>
+        </details>
+        `;
+
+	// --- TRANSCRIPT CHO BÀI NGHE 2 ---
+        const transcript_Bai2 = `
+        <details style="margin-top:10px; background:#edf2f7; padding:10px; border-radius:5px; border-left: 4px solid #4299e1;">
+            <summary style="font-weight:bold; cursor:pointer; color:#2b6cb0;">🎧 Bấm để xem Nội dung & Bản dịch bài nghe</summary>
+            <div style="margin-top:10px; font-size: 15px; line-height: 1.6; color: #2d3748;">
+                <b>🇷🇺 Tiếng Nga:</b><br>
+                Эзоп был рабом в Греции. Он был очень умный человек. Однажды хозяин сказал Эзопу: «Приготовь для ужина самое лучшее блюдо». Эзоп пошёл на рынок и купил язык. Он приготовил язык. Хозяин спросил Эзопа: «Почему это самое лучшее?». Эзоп ответил: «Потому что с помощью языка люди говорят друг другу правду и делают добро». На следующий день хозяин сказал: «Приготовь самое худшее блюдо». Эзоп снова приготовил блюдо из языка. Хозяин удивился: «Что это? Почему ты снова приготовил язык?». А Эзоп объяснил: «Язык — это самое худшее, потому что из-за него люди ссорятся и врут». Так Эзоп приготовил самые худшие и лучшие блюда из языка. Знаменитое выражение «Эзопов язык» — это язык Эзопа, особый язык аллегорий.
+                <hr style="border: 0; border-top: 1px solid #cbd5e0; margin: 12px 0;">
+                <b>🇻🇳 Tiếng Việt:</b><br>
+                Ê-xốp là một nô lệ ở Hy Lạp. Ông là một người rất thông minh. Một ngày nọ, người chủ nói với Ê-xốp: "Hãy chuẩn bị món ăn ngon nhất cho bữa tối." Ê-xốp đi chợ và mua cái lưỡi. Ông đã nấu món lưỡi. Người chủ hỏi Ê-xốp: "Tại sao đây lại là món tốt nhất?". Ê-xốp trả lời: "Bởi vì nhờ có ngôn ngữ (cái lưỡi), con người nói với nhau sự thật và làm việc thiện." Ngày hôm sau, người chủ nói: "Hãy chuẩn bị món ăn tồi tệ nhất." Ê-xốp lại chuẩn bị món ăn từ lưỡi. Người chủ ngạc nhiên: "Cái gì đây? Tại sao ngươi lại nấu lưỡi?". Ê-xốp giải thích: "Lưỡi là thứ tồi tệ nhất, vì do nó mà con người cãi vã và dối trá." Cứ như vậy, Ê-xốp đã nấu món ăn tệ nhất và tốt nhất từ lưỡi. Thành ngữ nổi tiếng "Ngôn ngữ Ê-xốp" chính là ngôn ngữ của Ê-xốp, một ngôn ngữ ngụ ngôn đặc biệt.
+            </div>
+        </details>
+        `;
+
+        // --- TRANSCRIPT CHO BÀI NGHE 3 ---
+        const transcript_Bai3 = `
+        <details style="margin-top:10px; background:#edf2f7; padding:10px; border-radius:5px; border-left: 4px solid #48bb78;">
+            <summary style="font-weight:bold; cursor:pointer; color:#2f855a;">🎧 Bấm để xem Nội dung & Bản dịch bài nghe</summary>
+            <div style="margin-top:10px; font-size: 15px; line-height: 1.6; color: #2d3748;">
+                <b>🇷🇺 Tiếng Nga:</b><br>
+                — Привет, Ира! Ты знаешь, что скоро праздник «Масленица»? Он обычно проходит в феврале.<br>
+                — Да, знаю. На Масленицу русские едят блины, потому что блин круглый и жёлтый, он символизирует солнце.<br>
+                — Правильно! А в последний день праздника на улице люди поют, танцуют и сжигают чучело. Это значит, что зима уходит.<br>
+                — А ты знаешь выражение «к тёще на блины»?<br>
+                — Конечно, это старый русский обычай. В среду мужья ходят в гости к маме жены, чтобы есть блины.<br>
+                — Слушай, Ира, а давай вместе праздновать? Я приду к тебе в гости в воскресенье.<br>
+                — Отличная идея! Жду тебя в воскресенье.
+                <hr style="border: 0; border-top: 1px solid #cbd5e0; margin: 12px 0;">
+                <b>🇻🇳 Tiếng Việt:</b><br>
+                — Chào Ira! Bạn có biết lễ hội "Maslenitsa" sắp đến không? Nó thường diễn ra vào tháng Hai.<br>
+                — Có, mình biết. Vào lễ Maslenitsa, người Nga ăn bánh xèo (bliny), vì chiếc bánh tròn và vàng, nó tượng trưng cho mặt trời.<br>
+                — Đúng rồi! Và vào ngày cuối cùng của lễ hội, mọi người hát hò, nhảy múa trên phố và đốt hình nộm. Điều đó có nghĩa là mùa đông đang qua đi.<br>
+                — Thế cậu có biết thành ngữ "đến nhà mẹ vợ ăn bánh xèo" không?<br>
+                — Tất nhiên, đó là một phong tục cổ của người Nga. Vào ngày thứ Tư, các ông chồng sẽ đến thăm mẹ của vợ để ăn bánh xèo.<br>
+                — Này Ira, chúng ta cùng nhau đón lễ nhé? Mình sẽ đến nhà bạn chơi vào Chủ nhật.<br>
+                — Ý tưởng tuyệt vời! Đợi bạn vào Chủ nhật nhé.
+            </div>
+        </details>
+        `;
+
+        // --- TRANSCRIPT CHO BÀI NGHE 4 ---
+        const transcript_Bai4 = `
+        <details style="margin-top:10px; background:#edf2f7; padding:10px; border-radius:5px; border-left: 4px solid #ecc94b;">
+            <summary style="font-weight:bold; cursor:pointer; color:#744210;">🎧 Bấm để xem Nội dung & Bản dịch bài nghe</summary>
+            <div style="margin-top:10px; font-size: 15px; line-height: 1.6; color: #2d3748;">
+                <b>🇷🇺 Tiếng Nga:</b><br>
+                Серёжа и Юля давно хотят купить квартиру. Они хотят, чтобы она была в центре города. Недавно они нашли для себя подходящий вариант. Это небольшая двухкомнатная квартира. Когда вы заходите в квартиру, слева от входной двери находится кухня. Прямо — гостиная. В гостиной лежит большой красный ковёр и стоит телевизор. Справа находится спальня. Мебели пока немного. Серёжа хочет купить большой компьютерный стол для работы. А Юля мечтает купить белый диван в гостиную, чтобы было уютно.
+                <hr style="border: 0; border-top: 1px solid #cbd5e0; margin: 12px 0;">
+                <b>🇻🇳 Tiếng Việt:</b><br>
+                Seryozha và Yulya từ lâu đã muốn mua một căn hộ. Họ muốn nó nằm ở trung tâm thành phố. Gần đây, họ đã tìm thấy một lựa chọn phù hợp cho mình. Đó là một căn hộ hai phòng nhỏ. Khi bạn bước vào căn hộ, bên trái cửa ra vào là nhà bếp. Đi thẳng là phòng khách. Trong phòng khách có trải một tấm thảm lớn màu đỏ và có một chiếc tivi. Bên phải là phòng ngủ. Hiện tại chưa có nhiều đồ nội thất. Seryozha muốn mua một chiếc bàn máy tính lớn để làm việc. Còn Yulya mơ ước mua một chiếc ghế sofa màu trắng đặt trong phòng khách cho ấm cúng.
+            </div>
+        </details>
+        `;
+
+	// --- TRANSCRIPT CHO BÀI NGHE 5 ---
+        const transcript_Bai5 = `
+        <details style="margin-top:10px; background:#edf2f7; padding:10px; border-radius:5px; border-left: 4px solid #ed8936;">
+            <summary style="font-weight:bold; cursor:pointer; color:#dd6b20;">🎧 Bấm để xem Nội dung & Bản dịch bài nghe</summary>
+            <div style="margin-top:10px; font-size: 15px; line-height: 1.6; color: #2d3748;">
+                <b>🇷🇺 Tiếng Nga:</b><br>
+                В России есть разные виды транспорта. Русские не часто ездят на такси, потому что это дорого. Многие люди не любят ездить на троллейбусе, потому что это слишком медленно. Зато русские любят ездить на метро, потому что метро ходит быстро и регулярно. Летом в выходные дни русские ездят на дачу на электричке. Пробки в городе часто бывают утром или вечером, когда люди ездят на работу или с работы. Билет на транспорты продают кондуктор или водитель, а также можно купить в кассе, поэтому все эти варианты правильны.
+                <hr style="border: 0; border-top: 1px solid #cbd5e0; margin: 12px 0;">
+                <b>🇻🇳 Tiếng Việt:</b><br>
+                Ở Nga có nhiều loại phương tiện giao thông khác nhau. Người Nga không thường xuyên đi taxi vì nó đắt. Nhiều người không thích đi xe điện bánh hơi (trolleybus) vì nó quá chậm. Thay vào đó, người Nga thích đi tàu điện ngầm (metro) vì tàu điện ngầm chạy nhanh và thường xuyên. Vào mùa hè dịp cuối tuần, người Nga đi đến dacha (ngôi nhà ngoại ô) bằng tàu điện ngoại ô (elektrichka). Tắc đường trong thành phố thường xảy ra vào buổi sáng hoặc buổi tối, khi mọi người đi làm hoặc tan sở. Vé các phương tiện giao thông được bán bởi người soát vé hoặc tài xế, và cũng có thể mua ở quầy vé, do đó tất cả các phương án đều đúng.
+            </div>
+        </details>
+        `;
+
+        // --- TRANSCRIPT CHO BÀI NGHE 6 ---
+        const transcript_Bai6 = `
+        <details style="margin-top:10px; background:#edf2f7; padding:10px; border-radius:5px; border-left: 4px solid #38b2ac;">
+            <summary style="font-weight:bold; cursor:pointer; color:#276749;">🎧 Bấm để xem Nội dung & Bản dịch bài nghe</summary>
+            <div style="margin-top:10px; font-size: 15px; line-height: 1.6; color: #2d3748;">
+                <b>🇷🇺 Tiếng Nga:</b><br>
+                Вы знаете, что Россия - чемпион по рождественским и новогодним праздникам. В России празднуют два Рождества и два Новых года. Дело в том, что до 1918 года Россия жила по юлианскому календарю. А после 1918 года Россия живёт по григорианскому календарю. Из-за этого в России отмечают Старый Новый год после обычного Нового года. Старый Новый год в России празднуют в ночь с 13 на 14 января.
+                <hr style="border: 0; border-top: 1px solid #cbd5e0; margin: 12px 0;">
+                <b>🇻🇳 Tiếng Việt:</b><br>
+                Bạn có biết rằng Nga là nhà vô địch về các ngày lễ Giáng sinh và Năm mới không? Ở Nga, người ta ăn mừng tới hai Lễ Giáng sinh và hai năm mới. Vấn đề là trước năm 1918, nước Nga sống theo lịch Julian. Còn sau năm 1918, nước Nga sống theo lịch Gregorian. Vì lý do này, ở Nga người ta tổ chức "Tết cũ" (Năm mới cũ) sau ngày Năm mới thông thường. Tết cũ ở Nga được tổ chức vào đêm 13 rạng sáng ngày 14 tháng Giêng.
+            </div>
+        </details>
+        `;
+
+        // --- TRANSCRIPT CHO BÀI NGHE 7 ---
+        const transcript_Bai7 = `
+        <details style="margin-top:10px; background:#edf2f7; padding:10px; border-radius:5px; border-left: 4px solid #667eea;">
+            <summary style="font-weight:bold; cursor:pointer; color:#4c51bf;">🎧 Bấm để xem Nội dung & Bản dịch bài nghe</summary>
+            <div style="margin-top:10px; font-size: 15px; line-height: 1.6; color: #2d3748;">
+                <b>🇷🇺 Tiếng Nga:</b><br>
+                В нашей семье утро начинается рано. Работа отца начинается в 8.30. Утром часто готовит завтрак – это папа, он делает это очень вкусно. После завтрака папа часто моет посуду. Потом папа часто уходит на работу со Светланой, моей сестрой. Папа ездит на работу на метро, так удобнее и быстрее. Вечером папа обычно возвращается домой поздно, потому что у него много работы.
+                <hr style="border: 0; border-top: 1px solid #cbd5e0; margin: 12px 0;">
+                <b>🇻🇳 Tiếng Việt:</b><br>
+                Buổi sáng trong gia đình tôi bắt đầu từ rất sớm. Công việc của bố bắt đầu vào lúc 8h30. Buổi sáng, người thường chuẩn bị bữa sáng chính là bố, bố nấu rất ngon. Sau bữa sáng, bố thường rửa bát. Sau đó, bố thường đi làm cùng với Svetlana, chị gái tôi. Bố đi làm bằng tàu điện ngầm, như vậy tiện và nhanh hơn. Buổi tối, bố thường về nhà muộn vì bố có rất nhiều công việc.
+            </div>
+        </details>
+        `;
+
+        // --- TRANSCRIPT CHO BÀI NGHE 8 ---
+        const transcript_Bai8 = `
+        <details style="margin-top:10px; background:#edf2f7; padding:10px; border-radius:5px; border-left: 4px solid #ed64a6;">
+            <summary style="font-weight:bold; cursor:pointer; color:#b83280;">🎧 Bấm để xem Nội dung & Bản dịch bài nghe</summary>
+            <div style="margin-top:10px; font-size: 15px; line-height: 1.6; color: #2d3748;">
+                <b>🇷🇺 Tiếng Nga:</b><br>
+                Тони приехал из Америки в Москву. Сейчас Тони учится в Московском Государственном Университете. Он живёт недалеко, поэтому можно идти пешком из общежития до университета всего 20 минут. У него есть друг Фил. Фирма Фила находится на Тверской улице. В свободное время Тони и Фил уже были в Большом театре, им очень понравилось. В следующие выходные Тони и Фил ещё хотят поехать в Измайловский парк.
+                <hr style="border: 0; border-top: 1px solid #cbd5e0; margin: 12px 0;">
+                <b>🇻🇳 Tiếng Việt:</b><br>
+                Tony đến Moscow từ Mỹ. Hiện tại Tony đang theo học tại Đại học Tổng hợp Quốc gia Moscow (MGU). Cậu ấy sống không xa, vì vậy có thể đi bộ từ ký túc xá đến trường đại học chỉ mất 20 phút. Cậu ấy có một người bạn tên là Phil. Công ty của Phil nằm trên phố Tverskaya. Trong thời gian rảnh rỗi, Tony và Phil đã đi xem ở Nhà hát Lớn (Bolshoi), họ rất thích. Cuối tuần tới, Tony và Phil còn muốn đến công viên Izmailovsky.
+            </div>
+        </details>
+        `;
+
+        // --- TRANSCRIPT CHO BÀI NGHE 9 ---
+        const transcript_Bai9 = `
+        <details style="margin-top:10px; background:#edf2f7; padding:10px; border-radius:5px; border-left: 4px solid #a0aec0;">
+            <summary style="font-weight:bold; cursor:pointer; color:#4a5568;">🎧 Bấm để xem Nội dung & Bản dịch bài nghe</summary>
+            <div style="margin-top:10px; font-size: 15px; line-height: 1.6; color: #2d3748;">
+                <b>🇷🇺 Tiếng Nga:</b><br>
+                У отца и сына серьёзный конфликт, потому что сын думает, что отец не хочет понимать его. Отец хочет, чтобы его сын строил дома, потому что отец строитель. Но сын не хочет делать всё, как его отец делает, потому что у сына другой характер, другой вкус, другие интересы и он должен жить по-своему. Вчера у отца и сына был скандал, потому что отец хотел, чтобы сын купил классические брюки и рубашку. К тому же, сын и его подруга Катя очень любят друг друга и они хотят быть вместе, потому что у них одинаковые интересы. Но отец хочет, чтобы сын и соседка были вместе.
+                <hr style="border: 0; border-top: 1px solid #cbd5e0; margin: 12px 0;">
+                <b>🇻🇳 Tiếng Việt:</b><br>
+                Hai bố con đang có một cuộc xung đột gay gắt, bởi vì người con nghĩ rằng bố không muốn hiểu mình. Người bố muốn con trai mình đi xây nhà, bởi vì ông là một thợ xây. Nhưng người con không muốn làm mọi thứ giống như bố mình, bởi vì cậu có tính cách khác, gu thẩm mỹ khác, sở thích khác và cậu phải sống theo cách riêng của mình. Hôm qua, hai bố con đã cãi nhau to, vì bố muốn con trai mua quần âu và áo sơ mi cổ điển. Thêm vào đó, người con và bạn gái Katya rất yêu nhau và muốn ở bên nhau vì họ có chung sở thích. Nhưng người bố lại muốn con trai và cô hàng xóm ở bên nhau.
+            </div>
+        </details>
+        `;
+
+        // --- TRANSCRIPT CHO BÀI NGHE 10 ---
+        const transcript_Bai10 = `
+        <details style="margin-top:10px; background:#edf2f7; padding:10px; border-radius:5px; border-left: 4px solid #f56565;">
+            <summary style="font-weight:bold; cursor:pointer; color:#c53030;">🎧 Bấm để xem Nội dung & Bản dịch bài nghe</summary>
+            <div style="margin-top:10px; font-size: 15px; line-height: 1.6; color: #2d3748;">
+                <b>🇷🇺 Tiếng Nga:</b><br>
+                Эта история произошла в Болгарии. Вальтер — турист. В другой город Вальтер катался на старом мотоцикле. Вечером Вальтер приехал в маленький город, от которого он выехал, потому что заблудился. Когда Вальтер спрашивал местных жителей, правильно ли он едет, болгары кивали. Вальтер думал, что кивок означает «да», но на самом деле в Болгарии когда люди кивают, это значит «нет». В итоге, до нужного города Вальтер приехал только с картой.
+                <hr style="border: 0; border-top: 1px solid #cbd5e0; margin: 12px 0;">
+                <b>🇻🇳 Tiếng Việt:</b><br>
+                Câu chuyện này xảy ra ở Bulgaria. Walter là một du khách. Walter đã lái một chiếc mô tô cũ để đến một thành phố khác. Đến tối, Walter lại đi vòng về đúng cái thành phố nhỏ mà anh ấy vừa xuất phát, vì anh đã bị lạc đường. Khi Walter hỏi người dân địa phương xem anh ấy đi có đúng đường không, người Bulgaria đã gật đầu. Walter tưởng rằng gật đầu có nghĩa là "có/đúng", nhưng thực ra ở Bulgaria, khi mọi người gật đầu, điều đó có nghĩa là "không". Kết quả là, Walter chỉ có thể đến được đúng thành phố cần đến khi dùng bản đồ.
+            </div>
+        </details>
+        `;
+
+        // --- TRANSCRIPT CHO BÀI NGHE 11 ---
+        const transcript_Bai11 = `
+        <details style="margin-top:10px; background:#edf2f7; padding:10px; border-radius:5px; border-left: 4px solid #d53f8c;">
+            <summary style="font-weight:bold; cursor:pointer; color:#97266d;">🎧 Bấm để xem Nội dung & Bản dịch bài nghe</summary>
+            <div style="margin-top:10px; font-size: 15px; line-height: 1.6; color: #2d3748;">
+                <b>🇷🇺 Tiếng Nga:</b><br>
+                На уроке преподаватель спросил, где Сирпа и Ирена. Сирпа опоздала на урок, потому что она была у Ирены. Сейчас Ирена дома, она болеет. Сегодня у Ирены кашель, насморк и очень болит голова. Сирпа сказала, что у Ирены есть аспирины. Преподаватель сказал, что в России когда болеют, пьют горячий чай с мёдом. Преподаватель посоветовал друзьям купить Ирене сок, шоколад и цветы, чтобы поднять ей настроение.
+                <hr style="border: 0; border-top: 1px solid #cbd5e0; margin: 12px 0;">
+                <b>🇻🇳 Tiếng Việt:</b><br>
+                Trong giờ học, giáo viên hỏi Sirpa và Irena đang ở đâu. Sirpa đã đến lớp muộn vì cô ấy vừa ở chỗ Irena. Hiện tại Irena đang ở nhà, cô ấy bị ốm. Hôm nay Irena bị ho, sổ mũi và rất đau đầu. Sirpa nói rằng Irena có thuốc aspirin. Giáo viên nói rằng ở Nga, khi bị ốm, người ta sẽ uống trà nóng với mật ong. Giáo viên khuyên các bạn hãy mua cho Irena nước ép, sô-cô-la và hoa để giúp cô ấy vui vẻ hơn.
+            </div>
+        </details>
+        `;
+
+        // --- TRANSCRIPT CHO BÀI NGHE 12 ---
+        const transcript_Bai12 = `
+        <details style="margin-top:10px; background:#edf2f7; padding:10px; border-radius:5px; border-left: 4px solid #319795;">
+            <summary style="font-weight:bold; cursor:pointer; color:#234e52;">🎧 Bấm để xem Nội dung & Bản dịch bài nghe</summary>
+            <div style="margin-top:10px; font-size: 15px; line-height: 1.6; color: #2d3748;">
+                <b>🇷🇺 Tiếng Nga:</b><br>
+                В нашей группе есть три друга: Эдик, Дима и Антон. Эдик – весёлый человек, он всегда шутит. У Димы есть серьёзность, он много учится. У Антона характер спокойный и внимательный. Антон всегда помогает своим друзьям, если им трудно. Студенты должны посещать все занятия и лекции, потому что у них в университете обязательное посещение. После занятий студенты часто занимаются в библиотеке, чтобы готовиться к экзаменам, то есть для подготовки к экзаменам.
+                <hr style="border: 0; border-top: 1px solid #cbd5e0; margin: 12px 0;">
+                <b>🇻🇳 Tiếng Việt:</b><br>
+                Trong nhóm của chúng tôi có ba người bạn: Edik, Dima và Anton. Edik là một người vui vẻ, cậu ấy luôn hay đùa. Dima thì có sự nghiêm túc, cậu ấy học rất nhiều. Anton có tính cách điềm đạm và chu đáo. Anton luôn giúp đỡ bạn bè của mình mỗi khi họ gặp khó khăn. Sinh viên phải tham dự tất cả các buổi học và bài giảng, vì trường đại học của họ quy định việc đi học là bắt buộc. Sau giờ học, sinh viên thường học bài trong thư viện để chuẩn bị cho các kỳ thi.
+            </div>
+        </details>
+        `;
+
+        // --- TRANSCRIPT CHO BÀI NGHE 13 ---
+        const transcript_Bai13 = `
+        <details style="margin-top:10px; background:#edf2f7; padding:10px; border-radius:5px; border-left: 4px solid #d69e2e;">
+            <summary style="font-weight:bold; cursor:pointer; color:#975a16;">🎧 Bấm để xem Nội dung & Bản dịch bài nghe</summary>
+            <div style="margin-top:10px; font-size: 15px; line-height: 1.6; color: #2d3748;">
+                <b>🇷🇺 Tiếng Nga:</b><br>
+                В поликлинике. Пациент сказал врачу, что он плохо себя чувствует, у него болит голова и горло. Пациент признался, что вчера выпил ледяную воду. Врач сказал пациенту купить лекарства по рецепту и принимать лекарства каждый день. Пациенту можно купить эти лекарства в аптеке. Врач объяснил, что пациенту можно принимать таблетки и витамины после еды. Также в среду пациенту надо прийти к врачу на повторный осмотр.
+                <hr style="border: 0; border-top: 1px solid #cbd5e0; margin: 12px 0;">
+                <b>🇻🇳 Tiếng Việt:</b><br>
+                Tại phòng khám đa khoa. Bệnh nhân nói với bác sĩ rằng anh ấy cảm thấy không khỏe, anh ấy bị đau đầu và đau họng. Bệnh nhân thừa nhận rằng hôm qua anh ấy đã uống nước đá lạnh. Bác sĩ bảo bệnh nhân đi mua thuốc theo đơn và uống thuốc mỗi ngày. Bệnh nhân có thể mua thuốc ở hiệu thuốc. Bác sĩ giải thích rằng bệnh nhân nên uống thuốc viên và vitamin sau khi ăn. Đồng thời, vào thứ Tư bệnh nhân cần đến gặp bác sĩ để tái khám.
+            </div>
+        </details>
+        `;
+
+        // --- TRANSCRIPT CHO BÀI NGHE 14 ---
+        const transcript_Bai14 = `
+        <details style="margin-top:10px; background:#edf2f7; padding:10px; border-radius:5px; border-left: 4px solid #805ad5;">
+            <summary style="font-weight:bold; cursor:pointer; color:#553c9a;">🎧 Bấm để xem Nội dung & Bản dịch bài nghe</summary>
+            <div style="margin-top:10px; font-size: 15px; line-height: 1.6; color: #2d3748;">
+                <b>🇷🇺 Tiếng Nga:</b><br>
+                Виктор хотел взять словарь у Антона, потому что он забыл свой словарь дома. Но Антона не было в общежитии. Утром Антон пошёл из библиотеки к Сергею. Днём Антон пообедал с Сергеем в кафе. Потом они пошли в кино. Антон пошёл к Наташе после кино. Антон вернулся домой только в 21 час, поэтому Виктор долго не мог его найти.
+                <hr style="border: 0; border-top: 1px solid #cbd5e0; margin: 12px 0;">
+                <b>🇻🇳 Tiếng Việt:</b><br>
+                Viktor muốn mượn từ điển của Anton, bởi vì cậu ấy đã bỏ quên từ điển ở nhà. Nhưng Anton lại không có ở ký túc xá. Buổi sáng Anton đã đi từ thư viện đến chỗ Sergey. Buổi trưa Anton ăn trưa cùng Sergey trong quán cà phê. Sau đó họ đi xem phim. Anton đã đến chỗ Natasha sau khi xem phim. Anton chỉ trở về nhà lúc 21 giờ, vì vậy Viktor đã tìm cậu ấy rất lâu mà không được.
+            </div>
+        </details>
+        `;
+	// --- TRANSCRIPT CHO BÀI NGHE 15 ---
+        const transcript_Bai15 = `
+        <details style="margin-top:10px; background:#edf2f7; padding:10px; border-radius:5px; border-left: 4px solid #e53e3e;">
+            <summary style="font-weight:bold; cursor:pointer; color:#c53030;">🎧 Bấm để xem Nội dung & Bản dịch bài nghe</summary>
+            <div style="margin-top:10px; font-size: 15px; line-height: 1.6; color: #2d3748;">
+                <b>🇷🇺 Tiếng Nga:</b><br>
+                В воскресенье студент Виктор ездил за город, чтобы кататься на лыжах. На улице было холодно, но Виктор оделся очень легко. Из-за этого на следующий день он заболел. Врач осмотрел его и посоветовал Виктору никуда не ходить и лечь в постель. Так как Виктор был болен, он не ходил в институт. Мама ухаживала за ним и купила ему лекарства в аптеке.
+                <hr style="border: 0; border-top: 1px solid #cbd5e0; margin: 12px 0;">
+                <b>🇻🇳 Tiếng Việt:</b><br>
+                Vào Chủ nhật, cậu sinh viên Viktor đã đi ra ngoại ô để trượt tuyết. Ngoài trời rất lạnh, nhưng Viktor lại mặc đồ rất mỏng. Vì lý do đó, ngày hôm sau cậu ấy đã bị ốm. Bác sĩ đã khám cho cậu và khuyên Viktor không được đi đâu cả và phải nằm nghỉ trên giường. Vì bị ốm nên Viktor đã không đến trường đại học. Mẹ đã chăm sóc cậu và đi mua thuốc cho cậu ở hiệu thuốc.
+            </div>
+        </details>
+        `;
+
+        // --- TRANSCRIPT CHO BÀI NGHE 16 ---
+        const transcript_Bai16 = `
+        <details style="margin-top:10px; background:#edf2f7; padding:10px; border-radius:5px; border-left: 4px solid #3182ce;">
+            <summary style="font-weight:bold; cursor:pointer; color:#2b6cb0;">🎧 Bấm để xem Nội dung & Bản dịch bài nghe</summary>
+            <div style="margin-top:10px; font-size: 15px; line-height: 1.6; color: #2d3748;">
+                <b>🇷🇺 Tiếng Nga:</b><br>
+                Вчера я долго повторял грамматику и учил новые слова, потому что у нас был тест по русскому языку. Сегодня мы получили результаты. Я сделал 3 ошибки. Моя первая ошибка была в том, что я забыл разницу между глаголами «идти» и «ходить». А вот Том и Джерри написали всё без ошибок. Поэтому именно Том и Джерри получили отличную оценку за тест. Наш друг Фрэнк написал работу не очень хорошо из-за болезни, он пропустил много занятий.
+                <hr style="border: 0; border-top: 1px solid #cbd5e0; margin: 12px 0;">
+                <b>🇻🇳 Tiếng Việt:</b><br>
+                Hôm qua tôi đã ôn tập ngữ pháp và học từ mới rất lâu, bởi vì chúng tôi có bài kiểm tra tiếng Nga. Hôm nay chúng tôi đã nhận được kết quả. Tôi làm sai 3 lỗi. Lỗi sai đầu tiên của tôi là tôi đã quên mất sự khác biệt giữa các động từ "идти" và "ходить". Còn Tom và Jerry thì làm bài không có một lỗi sai nào. Vì vậy chính Tom và Jerry đã nhận được điểm xuất sắc cho bài kiểm tra. Người bạn Frank của chúng tôi làm bài không được tốt lắm vì bị ốm, cậu ấy đã nghỉ học rất nhiều.
+            </div>
+        </details>
+        `;
+
+        const listeningBank = [
+            {
+                title: "АУДИРОВАНИЕ - Задание 1",
+                audioSrc: "Nghe/p2 - 1.mp3",
+                transcript: transcript_Bai1,
+                questions: [
+                    { q: "В этом году он был в командировке ... .", options: ["2 раза весной", "2 раза осенью", "3 раза весной"], answer: 0, exp: "<b>Đáp án:</b> 2 раза весной (2 lần vào mùa xuân)." },
+                    { q: "Летом этого года он ездил ... .", options: ["в Германию", "в Англию", "в Испанию"], answer: 1, exp: "<b>Đáp án:</b> в Англию (đến Anh)." },
+                    { q: "Он ездил в Швецию ... .", options: ["весной", "зимой", "осенью"], answer: 2, exp: "<b>Đáp án:</b> осенью (mùa thu)." },
+                    { q: "В Швеции он купил ... .", options: ["пальто", "свитер", "куртку"], answer: 2, exp: "<b>Đáp án:</b> куртку (áo khoác)." },
+                    { q: "Он ездил в Швецию ... .", options: ["на машине", "на самолёте", "на поезде"], answer: 2, exp: "<b>Đáp án:</b> на поезде (tàu hỏa)." },
+                    { q: "День рождения у его мамы будет ... .", options: ["в январе", "в феврале", "в марте"], answer: 1, exp: "<b>Đáp án:</b> в феврале (vào tháng Hai)." }
+                ]
+            },
+            {
+                title: "АУДИРОВАНИЕ - Задание 2",
+                audioSrc: "Nghe/p2 - 2.mp3",
+                transcript: transcript_Bai2,
+                questions: [
+                    { q: "Эзоп ... .", options: ["был рабом в Греции", "работал рабочим в России", "раб в Германии"], answer: 0, exp: "<b>Đáp án:</b> был рабом в Греции (là một nô lệ ở Hy Lạp)." },
+                    { q: "«Эзопов язык» — это … .", options: ["язык Эзопа", "язык, который приготовил Эзоп", "откровенное изложение мыслей"], answer: 0, exp: "<b>Đáp án:</b> язык Эзопа (Ngôn ngữ của Ê-xốp)." },
+                    { q: "Эзоп приготовил .... для ужина.", options: ["язык", "морепродукты", "овощи"], answer: 0, exp: "<b>Đáp án:</b> язык (cái lưỡi)." },
+                    { q: "Хозяин спросил Эзопа: ..... .", options: ["«Почему это самое лучшее?»", "«Что это?»", "«Почему ты не ешь?»"], answer: 0, exp: "<b>Đáp án:</b> «Почему это самое лучшее?» (Tại sao đây lại là thứ ngon nhất?)." },
+                    { q: "Эзоп приготовил самые худшие и лучшие блюда ... .", options: ["из морепродуктов", "из гуся", "из языка"], answer: 2, exp: "<b>Đáp án:</b> из языка (từ cái lưỡi)." },
+                    { q: "Эзоп .... .", options: ["умный человек", "добрый человек", "талантливый человек"], answer: 0, exp: "<b>Đáp án:</b> умный человек (người thông minh)." }
+                ]
+            },
+            {
+                title: "АУДИРОВАНИЕ - Задание 3",
+                audioSrc: "Nghe/p2 - 3.mp3",
+                transcript: transcript_Bai3,
+                questions: [
+                    { q: "Праздник «Масленица» проходит ... .", options: ["в февраля", "в марта", "в апреля"], answer: 0, exp: "<b>Đáp án:</b> в феврале (vào tháng Hai)." },
+                    { q: "На Масленицу русские едят ... .", options: ["торты", "блины", "пироги"], answer: 1, exp: "<b>Đáp án:</b> блины (bánh xèo bliny)." },
+                    { q: "Блин символизирует ... .", options: ["солнце", "богатство", "луну"], answer: 0, exp: "<b>Đáp án:</b> солнце (mặt trời)." },
+                    { q: "На Масленицу сжигают ... .", options: ["чучело", "чемодан", "одежды"], answer: 0, exp: "<b>Đáp án:</b> чучело (hình nộm)." },
+                    { q: "«К тёще на блины» — это …", options: ["официальный ужин", "старый русский обычай", "последний день свободной жизни"], answer: 1, exp: "<b>Đáp án:</b> старый русский обычай (một phong tục cổ của Nga)." },
+                    { q: "Он придёт к Ирине в гости ... .", options: ["в понедельник", "в воскресенье", "в пятницу"], answer: 1, exp: "<b>Đáp án:</b> в воскресенье (vào Chủ nhật)." }
+                ]
+            },
+            {
+                title: "АУДИРОВАНИЕ - Задание 4",
+                audioSrc: "Nghe/p2 - 4.mp3",
+                transcript: transcript_Bai4,
+                questions: [
+                    { q: "Серёжа и Юля хотят купить квартиру ... .", options: ["около магазина", "около театра", "в центре города"], answer: 2, exp: "<b>Đáp án:</b> в центре города (ở trung tâm thành phố)." },
+                    { q: "Недавно они нашли для себя квартиру ... .", options: ["большую двухкомнатную квартиру", "небольшую двухкомнатную квартиру", "маленькую двухкомнатную квартиру"], answer: 1, exp: "<b>Đáp án:</b> небольшую двухкомнатную квартиру (căn hộ 2 phòng nhỏ)." },
+                    { q: "Кухня находится ... .", options: ["справа от входной двери", "слева от входной двери", "в центре гостиной"], answer: 1, exp: "<b>Đáp án:</b> слева от входной двери (bên trái cửa ra vào)." },
+                    { q: "В гостиной лежит большой ... .", options: ["коричневый ковёр", "зелёный ковёр", "красный ковёр"], answer: 2, exp: "<b>Đáp án:</b> красный ковёр (thảm màu đỏ)." },
+                    { q: "Серёжа хочет купить ... .", options: ["обеденный стол", "письменный стол", "компьютерный стол"], answer: 2, exp: "<b>Đáp án:</b> компьютерный стол (bàn máy tính)." },
+                    { q: "Юля хочет купить ... .", options: ["белый шкаф", "белый диван", "белый ковёр"], answer: 1, exp: "<b>Đáp án:</b> белый диван (ghế sofa màu trắng)." }
+                ]
+            },
+            {
+                title: "АУДИРОВАНИЕ - Задание 5",
+                audioSrc: "Nghe/p2 - 5.mp3",
+                transcript: transcript_Bai5,
+                questions: [
+                    { q: "Русские не часто ездят ... .", options: ["на мотоцикле", "на такси", "на метро"], answer: 1, exp: "<b>Đáp án:</b> на такси (bằng taxi)." },
+                    { q: "Многие люди не любят ездить на троллейбусе, потому что ... .", options: ["это очень быстро", "это слишком медленно", "это не очень медленно"], answer: 1, exp: "<b>Đáp án:</b> это слишком медленно (vì nó quá chậm)." },
+                    { q: "Русские любят ездить на метро, потому что ... .", options: ["метро ходит быстро", "метро ходит регулярно", "билет на метро не дорогой"], answer: 0, exp: "<b>Đáp án:</b> метро ходит быстро (vì tàu điện ngầm chạy nhanh)." },
+                    { q: "Русские ездят на дачу ... .", options: ["на трамвае", "на троллейбусе", "на электричке"], answer: 2, exp: "<b>Đáp án:</b> на электричке (bằng tàu điện ngoại ô)." },
+                    { q: "Пробки часто бывают утром или вечером, когда люди ездят ......... .", options: ["в выходных", "на работу или с работы", "Все правильные варианты"], answer: 1, exp: "<b>Đáp án:</b> на работу или с работы (khi mọi người đi làm hoặc tan sở)." },
+                    { q: "Билет на транспорты продают ....... .", options: ["в кассе", "кондуктор или водитель", "Все правильные варианты"], answer: 2, exp: "<b>Đáp án:</b> Все правильные варианты (Tất cả các phương án đều đúng: mua ở quầy vé hoặc mua của phụ xe/tài xế)." }
+                ]
+            },
+            {
+                title: "АУДИРОВАНИЕ - Задание 6",
+                audioSrc: "Nghe/p2 - 6.mp3",
+                transcript: transcript_Bai6,
+                questions: [
+                    { q: "В России отмечают Старый Новый год ... .", options: ["после Нового года", "до Нового года", "накануне Нового года"], answer: 0, exp: "<b>Đáp án:</b> после Нового года (Sau ngày Năm mới)." },
+                    { q: "Россия до 1918 года живёт по …", options: ["друидскому календарю", "григорианскому календарю", "юлианскому календарю"], answer: 2, exp: "<b>Đáp án:</b> юлианскому календарю (Theo lịch Julian)." },
+                    { q: "Россия после 1918 года живёт по …", options: ["друидскому календарю", "григорианскому календарю", "юлианскому календарю"], answer: 1, exp: "<b>Đáp án:</b> григорианскому календарю (Theo lịch Gregorian)." },
+                    { q: "В России празднуют …", options: ["Рождество и Новый год", "два Рождества и старый Новый год", "два Рождества и два Новых года"], answer: 2, exp: "<b>Đáp án:</b> два Рождества и два Новых года (Hai lễ Giáng sinh và hai Năm mới)." },
+                    { q: "Старый Новый год в России празднуют в ночь …", options: ["в январе", "в декабре и в январе", "в декабре"], answer: 0, exp: "<b>Đáp án:</b> в январе (vào tháng Giêng)." },
+                    { q: "Россия - …", options: ["чемпион по рождественским и новогодним праздникам", "по праздникам", "по майским праздникам"], answer: 0, exp: "<b>Đáp án:</b> чемпион по рождественским и новогодним праздникам (Nhà vô địch về lễ Giáng sinh và Năm mới)." }
+                ]
+            },
+            {
+                title: "АУДИРОВАНИЕ - Задание 7",
+                audioSrc: "Nghe/p2 - 7.mp3",
+                transcript: transcript_Bai7,
+                questions: [
+                    { q: "Работа отца начинается ... .", options: ["в 8.30", "в 9.30", "в 10.30"], answer: 0, exp: "<b>Đáp án:</b> в 8.30 (Lúc 8 rưỡi)." },
+                    { q: "Часто готовит завтрак – это ... .", options: ["мама", "Светлана", "папа"], answer: 2, exp: "<b>Đáp án:</b> папа (Bố là người chuẩn bị bữa sáng)." },
+                    { q: "После завтрака папа часто ... .", options: ["чистит зубы", "моет посуду", "уходит на работу"], answer: 1, exp: "<b>Đáp án:</b> моет посуду (rửa bát đĩa)." },
+                    { q: "Папа часто уходит на работу ... .", options: ["со Светланой", "с мамой", "один"], answer: 0, exp: "<b>Đáp án:</b> со Светланой (cùng với Svetlana)." },
+                    { q: "Папа ездит на работу ... .", options: ["на метро", "на автобусе", "пешком"], answer: 0, exp: "<b>Đáp án:</b> на метро (bằng tàu điện ngầm)." },
+                    { q: "Папа обычно возвращается домой ... .", options: ["рано вечером", "поздно", "очень поздно"], answer: 1, exp: "<b>Đáp án:</b> поздно (về muộn)." }
+                ]
+            },
+            {
+                title: "АУДИРОВАНИЕ - Задание 8",
+                audioSrc: "Nghe/p2 - 8.mp3",
+                transcript: transcript_Bai8,
+                questions: [
+                    { q: "Тони приехал .... .", options: ["из Америки", "из Англии", "из Франции"], answer: 0, exp: "<b>Đáp án:</b> из Америки (Từ Mỹ)." },
+                    { q: "Сейчас Тони учится .... .", options: ["в Российском Университете Дружбы Народов", "в Новом Гуманитарном Университете", "в Московском Государственном Университете"], answer: 2, exp: "<b>Đáp án:</b> в Московском Государственном Университете (tại Đại học quốc gia Moscow)." },
+                    { q: "Можно идти пешком из общежития до университета .... .", options: ["20 минут", "30 минут", "13 минут"], answer: 0, exp: "<b>Đáp án:</b> 20 минут (đi bộ 20 phút)." },
+                    { q: "Фирма Фила находится .... .", options: ["на Ленинградском проспекте", "на Ломоносовском проспекте", "на Тверской улице"], answer: 2, exp: "<b>Đáp án:</b> на Тверской улице (trên phố Tverskaya)." },
+                    { q: "Тони и Фил уже были .... .", options: ["в Большом театре", "в цирке", "в Измайловском парке"], answer: 0, exp: "<b>Đáp án:</b> в Большом театре (ở nhà hát Lớn Bolshoi)." },
+                    { q: "Тони и Фил ещё хотят поехать .... .", options: ["в Большой театр", "в цирк", "в Измайловский парк"], answer: 2, exp: "<b>Đáp án:</b> в Измайловский парк (đến công viên Izmailovsky)." }
+                ]
+            },
+            {
+                title: "АУДИРОВАНИЕ - Задание 9",
+                audioSrc: "Nghe/p2 - 9.mp3",
+                transcript: transcript_Bai9,
+                questions: [
+                    { q: "Отец хочет, чтобы его сын строил дома, потому что ... .", options: ["отец строитель", "он хочет, чтобы сын жил, как он живёт", "он хочет, чтобы сын делал всё, как он делает"], answer: 0, exp: "<b>Đáp án:</b> отец строитель (bởi vì bố cậu là thợ xây)." },
+                    { q: "Вчера у отца и сына был скандал, потому что ... .", options: ["отец хотел, чтобы сын слушал только джаз", "отец хотел, чтобы сын смотрел фильмы, которые он рекомендовал", "отец хотел, чтобы сын купил классические брюки и рубашку"], answer: 2, exp: "<b>Đáp án:</b> отец хотел, чтобы сын купил классические брюки и рубашку (bố muốn con trai mua quần áo cổ điển)." },
+                    { q: "Сын и подруга – Катя очень любят друг друга и они хотят быть вместе, потому что ... .", options: ["Катя – классная девушка", "у них одинаковые интересы", "у них одна любимая рок-группа"], answer: 1, exp: "<b>Đáp án:</b> у них одинаковые интересы (họ có chung sở thích)." },
+                    { q: "Отец хочет, чтобы сын и ... .", options: ["Катя были вместе", "соседка были вместе", "родители были вместе"], answer: 1, exp: "<b>Đáp án:</b> соседка были вместе (bố muốn con và cô hàng xóm ở bên nhau)." },
+                    { q: "У отца и сына серьёзный конфликт, потому что ... .", options: ["сын думает, что отец не хочет понимать его", "сын не понимает отца", "отец не может понимать своего сына"], answer: 0, exp: "<b>Đáp án:</b> сын думает, что отец не хочет понимать его (con trai nghĩ rằng bố không muốn hiểu mình)." },
+                    { q: "Сын не хочет делать всё, как его отец делает, потому что ... .", options: ["он не похож на отца", "они разные люди", "у сына другой характер, другой вкус, другие интересы и он должен жить по-своему"], answer: 2, exp: "<b>Đáp án:</b> у сына другой характер... (người con có tính cách, gu thẩm mỹ, sở thích khác và phải sống cuộc đời của mình)." }
+                ]
+            },
+            {
+                title: "АУДИРОВАНИЕ - Задание 10",
+                audioSrc: "Nghe/p2 - 10.mp3",
+                transcript: transcript_Bai10,
+                questions: [
+                    { q: "Эта история произошла ... .", options: ["в Англии", "в Болгарии", "в Германии"], answer: 1, exp: "<b>Đáp án:</b> в Болгарии (Câu chuyện xảy ra ở Bulgaria)." },
+                    { q: "В другой город Вальтер катался ... .", options: ["на старой машине", "на новой машине", "на старом мотоцикле"], answer: 2, exp: "<b>Đáp án:</b> на старом мотоцикле (Lái một chiếc xe máy cũ)." },
+                    { q: "Вечером Вальтер приехал ... .", options: ["в новый город, в который он хотел приехать", "в новую деревню, в которую он хотел приехать", "в маленький город, от которого он выехал"], answer: 2, exp: "<b>Đáp án:</b> в маленький город, от которого он выехал (đến lại cái thành phố nhỏ mà anh ấy vừa xuất phát)." },
+                    { q: "Когда Вальтер спрашивал, что правильно ли он едет, болгары ... .", options: ["говорили «да»", "кивали", "говорили «нет»"], answer: 1, exp: "<b>Đáp án:</b> кивали (người Bulgaria đã gật đầu)." },
+                    { q: "До нужного города Вальтер приехал ... .", options: ["с картой", "с помощью одного друга", "с машиной"], answer: 0, exp: "<b>Đáp án:</b> с картой (Đến được thành phố nhờ có bản đồ)." },
+                    { q: "В Болгарии когда люди кивают, ... .", options: ["это значит «да»", "это значит «нет»", "это значит «непонятно»"], answer: 1, exp: "<b>Đáp án:</b> это значит «нет» (Ở Bulgaria gật đầu có nghĩa là \"Không\")." }
+                ]
+            },
+            {
+                title: "АУДИРОВАНИЕ - Задание 11",
+                audioSrc: "Nghe/p2 - 11.mp3",
+                transcript: transcript_Bai11,
+                questions: [
+                    { q: "Сейчас Ирена ... .", options: ["дома", "на уроке", "у врача"], answer: 0, exp: "<b>Đáp án:</b> дома (Hiện Irena đang ở nhà)." },
+                    { q: "Сирпа опоздала на урок, потому что ... .", options: ["она поздно стала", "она была у врача", "она была у Ирены"], answer: 2, exp: "<b>Đáp án:</b> она была у Ирены (Sirpa muộn vì vừa ở chỗ Irena)." },
+                    { q: "Сегодня у Ирены ... .", options: ["высокая температура", "кашель и насморк", "кашел, насморк и очень болит голова"], answer: 2, exp: "<b>Đáp án:</b> кашел, насморк и очень болит голова (Irena bị ho, sổ mũi và rất đau đầu)." },
+                    { q: "У Ирены есть ... .", options: ["витамины", "аспирины", "амоксициллин"], answer: 1, exp: "<b>Đáp án:</b> аспирины (Cô ấy có thuốc giảm đau Aspirin)." },
+                    { q: "В России когда болеют, пьют ... .", options: ["горячий чай", "горячай с мёдом", "горячее молоко"], answer: 1, exp: "<b>Đáp án:</b> горячай с мёдом (Ở Nga khi ốm người ta uống trà nóng với mật ong)." },
+                    { q: "Преподаватель посоветовал друзьям купить Ирене ... .", options: ["лекарства", "сок и шоколад и цветы", "сок, шоколад"], answer: 1, exp: "<b>Đáp án:</b> сок и шоколад и цветы (Giáo viên khuyên mua nước ép, sô-cô-la và hoa)." }
+                ]
+            },
+            {
+                title: "АУДИРОВАНИЕ - Задание 12",
+                audioSrc: "Nghe/p2 - 12.mp3",
+                transcript: transcript_Bai12,
+                questions: [
+                    { q: "Эдик – ....", options: ["человек с тяжёлым характером", "застенчивый человек", "весёлый человек"], answer: 2, exp: "<b>Đáp án:</b> весёлый человек (Edik là một người vui vẻ)." },
+                    { q: "У Димы есть ....", options: ["серьёзность", "известность", "честность"], answer: 0, exp: "<b>Đáp án:</b> серьёзность (Dima có sự nghiêm túc)." },
+                    { q: "У Анотона характер ....", options: ["спокойный и весёлый", "весёлый и внимательный", "спокойный и внимательный"], answer: 2, exp: "<b>Đáp án:</b> спокойный и внимательный (Anton có tính cách điềm đạm và chu đáo)." },
+                    { q: "..... всегда помогает своим друзьям", options: ["Дима", "Антон", "Анна"], answer: 1, exp: "<b>Đáp án:</b> Антон (Anton luôn giúp đỡ bạn bè)." },
+                    { q: "Студенты должны посещать все занятия и лекции, .....", options: ["потому что у них в университете обязательное посещение", "потому что они любят все занятия и лекции", "потому что они хотят сдать экзамены отлично"], answer: 0, exp: "<b>Đáp án:</b> потому что у них в университете обязательное посещение (vì trường quy định đi học là bắt buộc)." },
+                    { q: "Студенты часто занимаются в библиотеке ....", options: ["чтобы готовиться к экзаменам", "для подготовки к экзаменам", "А и Б"], answer: 2, exp: "<b>Đáp án:</b> А и Б (Cả phương án A và B đều mang nghĩa \"để chuẩn bị cho kỳ thi\")." }
+                ]
+            },
+            {
+                title: "АУДИРОВАНИЕ - Задание 13",
+                audioSrc: "Nghe/p2 - 13.mp3",
+                transcript: transcript_Bai13,
+                questions: [
+                    { q: "Пациент сказал, что .....", options: ["Он плохо себя чувствует.", "У него болит голова и горло.", "А и Б"], answer: 2, exp: "<b>Đáp án:</b> А и Б (Bệnh nhân nói cảm thấy không khỏe, bị đau đầu và đau họng)." },
+                    { q: "Пациент ....", options: ["выпил ледяную воду", "без темперетуры", "с темперетурой"], answer: 0, exp: "<b>Đáp án:</b> выпил ледяную воду (Bệnh nhân đã uống nước đá lạnh)." },
+                    { q: "Врач сказал пациенту ....", options: ["Все варианты правильны", "купить лекарства по рецепту", "принимать лекарства каждый день"], answer: 0, exp: "<b>Đáp án:</b> Все варианты правильны (Bác sĩ dặn mua thuốc theo đơn và uống mỗi ngày)." },
+                    { q: "Пациенту можно купить лекарства ....", options: ["в аптеке", "в поликлинике", "Все варианты правильны"], answer: 0, exp: "<b>Đáp án:</b> в аптеке (Bệnh nhân có thể mua thuốc ở hiệu thuốc)." },
+                    { q: "Пациенту можно принимать таблетки и витамиы", options: ["во время еды", "до еды", "после еды"], answer: 2, exp: "<b>Đáp án:</b> после еды (Bệnh nhân uống thuốc sau khi ăn)." },
+                    { q: "В среду пациенту надо прийти ....", options: ["к врачу", "в аптеку", "домой"], answer: 0, exp: "<b>Đáp án:</b> к врачу (Thứ Tư bệnh nhân cần đến tái khám ở chỗ bác sĩ)." }
+                ]
+            },
+            {
+                title: "АУДИРОВАНИЕ - Задание 14",
+                audioSrc: "Nghe/p2 - 14.mp3",
+                transcript: transcript_Bai14,
+                questions: [
+                    { q: "Виктор хотел взять словарь ....", options: ["у Антона", "в библиотеке", "у преподавателя"], answer: 0, exp: "<b>Đáp án:</b> у Антона (Viktor muốn mượn từ điển của Anton)." },
+                    { q: "Виктор взял словарь, потому что он ...", options: ["забыл словарь", "потерял словарь", "Все правильные варианты"], answer: 0, exp: "<b>Đáp án:</b> забыл словарь (vì cậu ấy bỏ quên từ điển ở nhà)." },
+                    { q: "Антон пошёл из библиотеки ....", options: ["к Наташе", "к подруге", "к Сергею"], answer: 2, exp: "<b>Đáp án:</b> к Сергею (Anton đã đi từ thư viện đến chỗ Sergey)." },
+                    { q: "Антон пообедал ...", options: ["с Сергеем", "с Наташей", "с мамой"], answer: 0, exp: "<b>Đáp án:</b> с Сергеем (Anton ăn trưa cùng Sergey)." },
+                    { q: "Антон пошёл к Наташе ...", options: ["в вход кино", "до кино", "после кино"], answer: 2, exp: "<b>Đáp án:</b> после кино (Anton đến chỗ Natasha sau khi xem phim)." },
+                    { q: "Антон вернулся домой .....", options: ["в 11 часов", "в 1 час", "в 21 час"], answer: 2, exp: "<b>Đáp án:</b> в 21 час (Anton chỉ trở về nhà lúc 21 giờ)." }
+                ]
+            },
+            {
+                title: "АУДИРОВАНИЕ - Задание 15",
+                audioSrc: "Nghe/p2 - 15.mp3",
+                transcript: transcript_Bai15,
+                questions: [
+                    { q: "Виктор ездил за город ……", options: ["чтобы кататься в роликах", "чтобы кататься на коньках", "чтобы кататься на лыжах"], answer: 2, exp: "<b>Đáp án:</b> чтобы кататься на лыжах (để trượt tuyết)." },
+                    { q: "Виктор был болен, …….. .", options: ["потому что он оделся очень легко", "потому что у него болел голова", "потому что он много работал"], answer: 0, exp: "<b>Đáp án:</b> потому что он оделся очень легко (vì cậu ấy mặc đồ rất mỏng)." },
+                    { q: "Врач посоветовал Виктору ............", options: ["прогуляться неторопливо", "должен лечь в постель", "никуда не ходить и лечь в постель"], answer: 2, exp: "<b>Đáp án:</b> никуда не ходить и лечь в постель (không đi đâu cả và nằm nghỉ trên giường)." },
+                    { q: "Виктору купил лекарства ......", options: ["мама", "врач", "брат"], answer: 0, exp: "<b>Đáp án:</b> мама (mẹ đã mua thuốc cho cậu)." },
+                    { q: "Так как Виктор был болен, он не ходил .....", options: ["в институт", "на стадион", "в клуб"], answer: 0, exp: "<b>Đáp án:</b> в институт (không đến trường đại học)." },
+                    { q: "Виктор –", options: ["спортсмен", "врач", "студент"], answer: 2, exp: "<b>Đáp án:</b> студент (Viktor là sinh viên)." }
+                ]
+            },
+            {
+                title: "АУДИРОВАНИЕ - Задание 16",
+                audioSrc: "Nghe/p2 - 16.mp3",
+                transcript: transcript_Bai16,
+                questions: [
+                    { q: "Автор повторял грамматику и учил слова ....", options: ["завтра", "сегодня", "вчера"], answer: 2, exp: "<b>Đáp án:</b> вчера (hôm qua)." },
+                    { q: "Он сделал ...", options: ["13 ошибок", "23 ошибки", "3 ошибки"], answer: 2, exp: "<b>Đáp án:</b> 3 ошибки (mắc 3 lỗi)." },
+                    { q: "У него первая ошибка .....", options: ["он забыл спряжение глаголов «идти» и «ходить»", "он забыл глаголы «идти» и «ходить»", "он забыл разницу между глаголами «идти» и «ходить»"], answer: 2, exp: "<b>Đáp án:</b> он забыл разницу между глаголами «идти» и «ходить» (cậu ấy quên sự khác biệt giữa động từ идти và ходить)." },
+                    { q: "Том и Джерри написали всё .....", options: ["без ошибок", "и сделали только 3 ошибки.", "с ошибками."], answer: 0, exp: "<b>Đáp án:</b> без ошибок (viết không có một lỗi sai nào)." },
+                    { q: "..... написал работу не очень хорошо из-за болезни", options: ["Фрэнк", "Том", "Джерри"], answer: 0, exp: "<b>Đáp án:</b> Фрэнк (Frank làm không tốt vì bị ốm)." },
+                    { q: "........ получил отличную оценку за тест?", options: ["Фрэнк и Том", "Том и Джерри", "Джерри и Фрэнк"], answer: 1, exp: "<b>Đáp án:</b> Том и Джерри (Tom và Jerry nhận điểm xuất sắc)." }
+                ]
+            }
+       // Thêm các bài nghe khác vào đây...
+	 ];
+        
+
+      // ==========================================
+        // 2. NGÂN HÀNG CÂU HỎI TRẮC NGHIỆM CÓ HÌNH ẢNH (25 CÂU PHẦN 1)
+        // ==========================================
+        const imageMcqBank = [
+          { 
+                q: "Где можно увидеть или прочитать это объявление?", 
+                imageSrc: "Quảng cáo/1.png", 
+                options: ["В библиотеке", "В столовой", "В ресторане", "В самолёте"], 
+                answer: 1, // Đáp án B: В столовой
+                explanation: "Biển báo ghi 'Просьба убирать за собой посуду' (Vui lòng dọn dẹp bát đĩa sau khi ăn xong). Đây là quy định tự phục vụ điển hình ở căn tin (столовая)." 
+            },
+            { 
+                q: "Где можно увидеть или прочитать это объявление?", 
+                imageSrc: "Quảng cáo/2.png", 
+                options: ["В библиотеке", "В музее", "В театре", "В самолёте"], 
+                answer: 1, // Đáp án B: В музее
+                explanation: "Biển báo ghi 'Фотографировать картины и экспонаты нельзя' (Cấm chụp ảnh tranh và hiện vật). Tranh và hiện vật được trưng bày trong bảo tàng (музей)." 
+            },
+            { 
+                q: "Где можно увидеть или прочитать это объявление?", 
+                imageSrc: "Quảng cáo/3.png", 
+                options: ["В библиотеке", "В столовой", "В ресторане", "В самолёте"], 
+                answer: 0, // Đáp án A: В библиотеке
+                explanation: "Biển báo ghi 'Уважаемые читатели! Просим вас не писать на книгах' (Kính gửi bạn đọc! Vui lòng không viết bậy lên sách). Điều này dành cho người đọc ở thư viện (библиотека)." 
+            },
+            { 
+                q: "В каком журнале можно прочитать эту информацию?", 
+                imageSrc: "Quảng cáo/4.png", 
+                options: ["В журнале «Мода»", "В журнале «Спорт»", "В журнале «Новости»", "В журнале «Красота»"], 
+                answer: 2, // Đáp án C (V): В журнале «Новости»
+                explanation: "Tin tức về việc các nhà báo Nga đón Tổng thống Pháp ở sân bay Sheremetyevo là một sự kiện chính trị - thời sự, do đó sẽ nằm trên tạp chí Tin tức (Новости)." 
+            },
+            { 
+                q: "В каком журнале можно прочитать эту информацию?", 
+                imageSrc: "Quảng cáo/5.png", 
+                options: ["В журнале «Мода»", "В журнале «Спорт»", "В журнале «Новости»", "В журнале «Красота»"], 
+                answer: 1, // Đáp án B: В журнале «Спорт»
+                explanation: "Bản tin nói về cuộc chạm trán giữa 2 đội bóng đá (футбольные команды) Dinamo và Real ở sân vận động Luzhniki, nên sẽ nằm ở tạp chí Thể thao (Спорт)." 
+            },
+            { 
+                q: "В каком журнале можно прочитать эту информацию?", 
+                imageSrc: "Quảng cáo/6.png", 
+                options: ["В журнале «Мода»", "В журнале «Спорт»", "В журнале «Наука и жизнь»", "В журнале «театр»"], 
+                answer: 2, // Đáp án C (V): В журнале «Наука и жизнь»
+                explanation: "Thông tin 'Các nhà khoa học (Учёные) nói rằng con người sẽ không bị ốm và sống tới 200 tuổi' thuộc về lĩnh vực khám phá, do đó phù hợp với tạp chí Khoa học và Đời sống (Наука и жизнь)." 
+            },
+            { 
+                q: "Вас приглашают .........", 
+                imageSrc: "Quảng cáo/7.png", 
+                options: ["изучать русский язык", "поехать в туристическое путешествие", "работать в турагентстве", "отдыхать в курорте"], 
+                answer: 2, // Đáp án C (V): работать в турагентстве
+                explanation: "Quảng cáo ghi rõ 'Работа летом' (Làm việc mùa hè) để làm hướng dẫn viên, quản lý... tại Đại lý du lịch (Туристическое агентство). Vậy họ mời bạn đến làm việc." 
+            },
+            { 
+                q: "Когда можно получить результаты экзамена?", 
+                imageSrc: "Quảng cáo/8.png", 
+                options: ["в любое время", "каждый день", "только в будни", "только в выходные"], 
+                answer: 2, // Đáp án C (V): только в будни
+                explanation: "Thông báo ghi 'кроме выходных' (ngoại trừ cuối tuần), tức là chỉ phát kết quả vào các ngày làm việc trong tuần (только в будни)." 
+            },
+            { 
+                q: "В этой аптеке скидки .....", 
+                imageSrc: "Quảng cáo/9.png", 
+                options: ["только пенсионерам", "всем покупателям", "пенсионерам в определённое время", "детям"], 
+                answer: 2, // Đáp án C (V): пенсионерам в определённое время
+                explanation: "Biển ghi 'Пенсионерам скидка... с 10:00 до 14:00'. Nghĩa là chỉ giảm giá cho người hưu trí vào một khung giờ nhất định (в определённое время)." 
+            },
+            { 
+                q: "Что могут делать друзья в клубе?", 
+                imageSrc: "Quảng cáo/10.png", 
+                options: ["заниматься музыкальными инструментами", "заниматься спортом", "играть на компьютере", "танцевать"], 
+                answer: 3, // Đáp án D (G): танцевать
+                explanation: "Quảng cáo viết 'Вы любите поп-музыку? Мы ждём вас в нашем новом клубе' (Bạn yêu nhạc Pop? Hẹn gặp tại câu lạc bộ mới). Tại một câu lạc bộ nhạc Pop, hoạt động chính là khiêu vũ/nhảy (танцевать)." 
+            },
+	    { 
+                q: "На чём можно ехать на экскурсию?", 
+                imageSrc: "Quảng cáo/11.png", 
+                options: ["на поезде", "на машине", "на автобусе", "на трамвае"], 
+                answer: 2, // Đáp án C (V): на автобусе
+                explanation: "Biển quảng cáo ghi 'В воскресенье состоится АВТОБУСНАЯ экскурсия по Москве' (Chủ nhật sẽ có chuyến tham quan Moscow bằng xe buýt). Do đó phương tiện là xe buýt (автобус)." 
+            },
+            { 
+                q: "В каком журнале можно прочитать это объявление?", 
+                imageSrc: "Quảng cáo/12.png", 
+                options: ["В журнале «спорт»", "В журнале «Карьера»", "В журнале «красота»", "в журнале «мода»"], 
+                answer: 1, // Đáp án B: В журнале «Карьера»
+                explanation: "Đây là một thông báo tuyển dụng việc làm: 'Работа! Туристическому агентству требуются...' (Việc làm! Đại lý du lịch cần tuyển...). Nội dung tìm việc thường xuất hiện trên tạp chí Sự nghiệp (Карьера)." 
+            },
+            { 
+                q: "Где можно увидеть или прочитать это объявление?", 
+                imageSrc: "Quảng cáo/13.png", 
+                options: ["В метро", "В аптеке", "В библиотеке", "В поликлинике"], 
+                answer: 3, // Đáp án D (G): В поликлинике
+                explanation: "Thông báo tuyển dụng ghi 'Городской ПОЛИКЛИНИКЕ требуются: врачи, медсёстры...' (Phòng khám đa khoa thành phố cần tuyển: bác sĩ, y tá...). Biển báo này tất nhiên dán ở Phòng khám (поликлиника)." 
+            },
+            { 
+                q: "Когда школа начинается работать?", 
+                imageSrc: "Quảng cáo/14.png", 
+                options: ["с первого января по седьмого февраля", "с восьмого февраля", "с восьмого марта", "с седьмого февраля"], 
+                answer: 1, // Đáp án B: с восьмого февраля
+                explanation: "Thông báo của trường ghi: 'Учебные занятия начинаются 08.2 в 8 часов' (Lớp học bắt đầu từ ngày 8 tháng 2 lúc 8 giờ). 08.2 chính là ngày 8 tháng 2 (с восьмого февраля)." 
+            },
+            { 
+                q: "Где можно увидеть или прочитать это объявление?", 
+                imageSrc: "Quảng cáo/15.png", 
+                options: ["В метро", "В аптеке", "В библиотеке", "В поликлинике"], 
+                answer: 0, // Đáp án A: В метро
+                explanation: "Nội dung ghi 'Московскому МЕТРОПОЛИТЕНУ требуются водители...' (Hệ thống Tàu điện ngầm Moscow cần tuyển tài xế...). Biển này sẽ được dán ở bến tàu điện ngầm (метро)." 
+            },
+            { 
+                q: "Как работает эта аптека?", 
+                imageSrc: "Quảng cáo/16.png", 
+                options: ["только ночью", "только днём", "только вечером", "целые сутки"], 
+                answer: 3, // Đáp án D (G): целые сутки
+                explanation: "Biển hiệu ghi 'Наша аптека работает КРУГЛОСУТОЧНО' (Hiệu thuốc của chúng tôi mở cửa 24/24). 'Круглосуточно' đồng nghĩa với suốt cả ngày đêm (целые сутки)." 
+            },
+            { 
+                q: "Для кого это объявление?", 
+                imageSrc: "Quảng cáo/17.png", 
+                options: ["для артиста", "для режиссёра", "для зрителя", "для журналиста"], 
+                answer: 2, // Đáp án C (V): для зрителя
+                explanation: "Biển cảnh báo ghi: 'После третьего звонка вход в зрительный зал воспрещён' (Sau hồi chuông thứ ba, cấm vào khán phòng). Lời nhắc nhở này nhắm đến khán giả đi xem kịch/phim (зритель)." 
+            },
+            { 
+                q: "Для кого это объявление?", 
+                imageSrc: "Quảng cáo/18.png", 
+                options: ["для покупателей", "для водителей", "для продавцов", "для рабочих"], 
+                answer: 0, // Đáp án A: для покупателей
+                explanation: "Biển báo 'Детям до 18 лет спиртные напитки не опускаются!' (Không bán đồ uống có cồn cho trẻ em dưới 18 tuổi). Biển báo tại quầy thu ngân này nhằm nhắc nhở khách hàng đến mua đồ (покупатель)." 
+            },
+            { 
+                q: "Для кого это объявление?", 
+                imageSrc: "Quảng cáo/19.png", 
+                options: ["для покупателей", "для служащих банка", "для продавцов", "для рабочих"], 
+                answer: 0, // Đáp án A: для покупателей
+                explanation: "Biển quảng cáo ghi 'Уважаемые дамы и господа! На 2-ом этаже нашего ТОРГОВОГО ЦЕНТРА...' (Kính thưa quý vị! Trên tầng 2 của trung tâm thương mại...). Thông báo trong trung tâm thương mại dành cho khách đi mua sắm (покупатель)." 
+            },
+            { 
+                q: "Для кого это объявление?", 
+                imageSrc: "Quảng cáo/20.png", 
+                options: ["для покупателей", "для пациентов", "для продавцов", "для рабочих"], 
+                answer: 1, // Đáp án B: для пациентов
+                explanation: "Biển báo 'Посетите стоматологический кабинет...' (Hãy ghé thăm phòng khám nha khoa...). Lời mời đến phòng khám y tế/nha khoa là dành cho bệnh nhân (пациент)." 
+            },
+	    { 
+                q: "Где можно увидеть или прочитать это объявление?", 
+                imageSrc: "Quảng cáo/21.png", 
+                options: ["в метро", "в автобусе", "в театре", "на улице"], 
+                answer: 3, // Đáp án D (G): на улице
+                explanation: "Lưu ý: Câu hỏi trong ảnh gốc khác với đề cương ban đầu. Đề gốc hỏi 'Этот человек хочет снять квартиру, которая должна находиться...'. Tuy nhiên theo ảnh chụp thì câu hỏi là 'Где можно увидеть или прочитать это объявление?'. Những mẩu giấy xé số điện thoại như thế này thường được dán trên đường phố, cột điện, bến xe (на улице)." 
+            },
+            { 
+                q: "Для кого это объявление?", 
+                imageSrc: "Quảng cáo/22.png", 
+                options: ["для покупателей", "для служащих банка", "для продавцов", "для студентов"], 
+                answer: 3, // Đáp án D (G): для студентов
+                explanation: "Tương tự, câu hỏi trong ảnh là 'Для кого это объявление?'. Quảng cáo này muốn TÌM THUÊ (Сниму) một căn hộ 1 phòng. Đối tượng hay đi tìm thuê những căn hộ nhỏ giá rẻ kiểu này nhất chính là sinh viên (для студентов)." 
+            },
+            { 
+                q: "Где можно увидеть или прочитать это объявление?", 
+                imageSrc: "Quảng cáo/23.png", 
+                options: ["В метро", "В библиотеке", "В аптеке", "В поликлинике"], 
+                answer: 0, // Đáp án A: В метро
+                explanation: "Dựa theo ảnh bạn chụp, câu hỏi thực tế đi kèm bức ảnh này là 'Где можно увидеть или прочитать это объявление?'. Thông thường các quảng cáo bất động sản dạng tờ rơi in ấn chỉn chu thường được dán trên các bảng tin ở ga tàu điện ngầm (В метро)." 
+            },
+            { 
+                q: "Для кого это объявление?", 
+                imageSrc: "Quảng cáo/24.png", 
+                options: ["для продавцов", "для служащих банка", "для покупателей", "для студентов"], 
+                answer: 3, // Đáp án D (G): для студентов
+                explanation: "Câu hỏi trong ảnh là 'Для кого это объявление?'. Thông báo CHO THUÊ 1 phòng (Сдаю комнату) trong một căn hộ tập thể thường hướng tới đối tượng người thuê là sinh viên (для студентов)." 
+            },
+            { 
+                q: "Для кого это объявление?", 
+                imageSrc: "Quảng cáo/25.png", 
+                options: ["для покупателей", "для пациентов", "для продавцов", "для рабочих"], 
+                answer: 3, // Đáp án D (G): для рабочих
+                explanation: "Câu hỏi trong ảnh là 'Для кого это объявление?'. Mẩu tin 'Cho thuê phòng trong căn hộ 3 phòng' ngoài sinh viên ra thì còn đặc biệt hướng tới đối tượng người lao động (рабочий) đến thành phố làm việc cần tìm chỗ ở ghép rẻ tiền." 
+            }
+        ];
+
+        // ==========================================
+        // 3. NGÂN HÀNG TRẮC NGHIỆM CHỮ (Không hình ảnh)
+        // ==========================================
+        const mcqBank = [
+            { q: "Мальчик, …. в соседней квартире, каждый вечер очень громко играет на саксофоне.", options: ["живущий", "живший", "живёт", "живя"], answer: 0, explanation: "Dùng tính động từ chủ động hiện tại 'живущий' bổ nghĩa cho 'Мальчик' đang sống ở hiện tại." },
+            { q: "…, что брату трудно поднять чемодан, Иван помог ему.", options: ["Посмотрев", "Видит", "Смотря", "Видя"], answer: 3, explanation: "Dùng trạng động từ hiện tại 'Видя' (Nhìn thấy) chỉ nguyên nhân đồng thời." },
+            { q: "Этот костюм вам не … !", options: ["несёт", "ходит", "носит", "идёт"], answer: 3, explanation: "Cụm từ cố định 'идёт кому' có nghĩa là (quần áo) hợp với ai đó." },
+            { q: "… пойдёшь в магазин, купи ещё молока.", options: ["Как", "Когда", "Пока", "Во время"], answer: 1, explanation: "Liên từ thời gian 'Когда' (Khi) dùng trong mệnh đề điều kiện/thời gian." },
+            { q: "В конце … нам надо сдавать отчёт.", options: ["этого года", "этом году", "этот год", "в этом году"], answer: 0, explanation: "Cấu trúc 'В конце + Cách 2' (vào cuối năm nay) -> этого года." },
+            { q: "Газеты обладают большим … на людей.", options: ["обычаем", "влиянием", "властью", "средствами"], answer: 1, explanation: "Cụm từ 'обладать влиянием на кого/что' (có sức ảnh hưởng tới...)." },
+            { q: "Мама, я уже на вокзале. … прошла нормально!", options: ["покупка", "поездка", "посадка", "прогулка"], answer: 1, explanation: "'поездка' (chuyến đi). Ý câu: Chuyến đi đã diễn ra bình thường." },
+            { q: "По применяемым топливам ракеты ..... на жидкостные и твёрдотопливные.", options: ["подразделяются", "разделяется", "делится", "деляются на"], answer: 0, explanation: "Động từ 'подразделяться на' (được phân chia thành). Chủ ngữ số nhiều -> подразделяются." },
+            { q: "Управляемые крылатые ракеты ..... для поражения складов противника.", options: ["используется", "применяются", "предназначен", "могут"], answer: 1, explanation: "Chủ ngữ 'ракеты' (số nhiều) được sử dụng -> применяются." },
+            { q: "Зенитная артиллерийская в зависимости от калибра ..... на малокалиберную, среднекалиберную и крупнокалиберную.", options: ["подразделяются", "разделяет", "деляются", "делится"], answer: 3, explanation: "Chủ ngữ số ít 'артиллерийская' (pháo binh) -> делится на (được chia thành)." },
+            { q: "Мой коллега, … раньше в Москве, сейчас работает в Лондоне.", options: ["работавший", "работающий", "работает", "отработанный"], answer: 0, explanation: "'раньше' (trước đây) chỉ quá khứ -> tính động từ chủ động quá khứ 'работавший'." },
+            { q: "Он переходил с работы на работу, … её каждые полгода.", options: ["меняя", "поменяв", "изменив", "изменяет"], answer: 0, explanation: "'каждые полгода' chỉ sự lặp lại -> trạng động từ chưa hoàn thành 'меняя'." },
+            { q: "Ты что, с ума …! Что ты делаешь?", options: ["пошёл", "пришёл", "сошёл", "вышёл"], answer: 2, explanation: "Thành ngữ 'сойти с ума' (phát điên, mất trí)." },
+            { q: "Весь … мне должно везти — по гороскопу это мой год!", options: ["следующего года", "на следующий год", "в следующем году", "следующий год"], answer: 3, explanation: "Cách 4 chỉ thời gian kéo dài trọn vẹn: Весь следующий год (Suốt cả năm tới)." },
+            { q: "… он переделал все дела!", options: ["этой неделе", "за эту неделю", "через неделю", "на этой неделе"], answer: 1, explanation: "Cấu trúc 'за + Cách 4' chỉ khoảng thời gian hoàn thành xong một việc." },
+            { q: "Вся важная информация … у меня в компьютере.", options: ["хранится", "хранит", "водит", "водится"], answer: 0, explanation: "Động từ phản thân mang nghĩa bị động 'хранится' (được lưu trữ)." },
+            { q: "Поезд из Мурманска … на третий путь через две минуты!", options: ["прибыл", "прибывал", "прибывает", "пришёл"], answer: 2, explanation: "Thì hiện tại 'прибывает' dùng để diễn tả một hành động chắc chắn sẽ xảy ra trong tương lai gần theo lịch trình." },
+            { q: "Почти все артиллерийские катера ...... радиолокационными станциями.", options: ["оснащен", "оснащены", "вооружён", "служит"], answer: 1, explanation: "Chủ ngữ số nhiều, dùng tính từ đuôi ngắn 'оснащены' (được trang bị)." },
+            { q: "Пусковое устройство комплекса управляемого РО ..... пусковой установки, систем...", options: ["имеет", "включает", "состоит из", "состоит"], answer: 2, explanation: "Cấu trúc 'состоять из + Cách 2' (Bao gồm từ...)." },
+            { q: "Пуск неуправляемых ракет производится с пусковых установок, ..... могут быть несамоходными или самоходными.", options: ["которых", "которым", "которыми", "которые"], answer: 3, explanation: "Đại từ quan hệ làm chủ ngữ cho mệnh đề phụ -> 'которые'." },
+            { q: "Девушка, … эту шубу, заплатила за неё очень много.", options: ["купит", "покупающая", "купленная", "купившая"], answer: 3, explanation: "Hành động 'mua áo' xảy ra trước hành động 'trả tiền' ở quá khứ -> tính động từ quá khứ 'купившая'." },
+            { q: "… из дома, не забывайте выключать свет!", options: ["Выходит", "Выйдя", "Выходив", "Выходя"], answer: 3, explanation: "Hành động đồng thời -> trạng động từ chưa hoàn thành 'Выходя' (Khi đi ra khỏi...)." },
+            { q: "Вчера Борис … из себя! Он был такой злой!", options: ["пришёл", "пошёл", "перешёл", "вышел"], answer: 3, explanation: "Thành ngữ 'выйти из себя' (mất bình tĩnh, nổi cáu)." },
+            { q: "С каждым днём … всё холоднее и холоднее.", options: ["есть", "станет", "становится", "буду"], answer: 2, explanation: "Động từ 'становиться' + so sánh hơn diễn tả quá trình thay đổi dần dần." },
+            { q: "На … встрече с клиентом Михаил чувствовал себя неловко.", options: ["первая", "первой", "первый", "первую"], answer: 1, explanation: "Giới từ 'На' + Cách 6. 'встрече' là giống cái Cách 6 nên tính từ chia là 'первой'." },
+            { q: "… случаю, он нашёл отличную работу.", options: ["При этом", "Благодаря", "Из-за", "Потому что"], answer: 1, explanation: "Благодаря + Cách 3 (случаю) mang nghĩa tích cực: Nhờ dịp tình cờ..." },
+            { q: "Дом находится совсем недалеко от метро. Только в пяти минутах … .", options: ["плавания", "езды", "ходьбы", "бега"], answer: 2, explanation: "'ходьба' là đi bộ. 5 phút đi bộ (в пяти минутах ходьбы)." },
+            { q: "Каждый класс кораблей имеет оружие и специальное вооружение, использование ..... позволяет...", options: ["которых", "которого", "который", "которыми"], answer: 1, explanation: "Sử dụng CỦA vũ khí đó (оружие - giống trung) -> Cách 2 'которого'." },
+            { q: "Ракетные катера .... для ведения боевых действий.", options: ["предназначена", "служит", "используются", "используется"], answer: 2, explanation: "Chủ ngữ số nhiều 'катера', động từ mang nghĩa bị động 'используются' (được sử dụng)." },
+            { q: "Тактические ракеты ..... дальностью полёта в несколько десятков километров.", options: ["имеют", "обладает", "имеет", "обладают"], answer: 3, explanation: "Động từ 'обладать + Cách 5'. Tên lửa (số nhiều) -> обладают." },
+            { q: "Дом, … в прошлом веке, требует ремонта.", options: ["строящий", "строит", "построенный", "строивший"], answer: 2, explanation: "Nhà 'được xây' (bị động) trong quá khứ -> dùng tính động từ bị động quá khứ 'построенный'." },
+            { q: "… всё, что хотела, она замолчала.", options: ["Говоря", "Говорит", "Сказав", "Говорив"], answer: 2, explanation: "Hành động 'nói xong' xảy ra trước hành động 'im lặng' -> trạng động từ hoàn thành 'Сказав'." },
+            { q: "Учёные … дискуссии на эту тему уже давно.", options: ["ведут", "несут", "идут", "носят"], answer: 0, explanation: "Cụm từ cố định: 'вести дискуссию' (tiến hành thảo luận). Chủ ngữ số nhiều -> ведут." },
+            { q: "С каждым годом эта девушка … всё красивее и красивее.", options: ["стала", "была", "есть", "становилась"], answer: 3, explanation: "Quá trình biến đổi kéo dài trong quá khứ ('С каждым годом') -> становилась." },
+            { q: "После … часов работы за компьютером у него заболели глаза.", options: ["второго", "два", "двух", "второй"], answer: 2, explanation: "Giới từ 'После' đi với Cách 2. Số 2 đổi sang Cách 2 là 'двух'." },
+            { q: "Ой, что вчера … в клубе!", options: ["было", "становилось", "есть", "стало"], answer: 0, explanation: "Cấu trúc 'Что было?' nghĩa là chuyện gì đã xảy ra." },
+            { q: "У меня … спина. Что делать?", options: ["болит", "больничная", "болеет", "больно"], answer: 0, explanation: "'болит' dùng cho một bộ phận cơ thể bị đau (làm chủ ngữ)." },
+            { q: "На .... морской пехоты находится стрелковое оружие и артиллерия...", options: ["вооружении", "вооружение", "вооружения", "вооружениях"], answer: 0, explanation: "Giới từ 'На' + Cách 6 -> На вооружении (trong kho vũ khí/được trang bị)." },
+            { q: "Ракетное оружие ...... значительной дальностью действия.", options: ["имеет", "обладает", "обладают", "имеют"], answer: 1, explanation: "Giống trung số ít 'оружие' đi với động từ 'обладает' (+ Cách 5)." },
+            { q: "Корабельная артиллерия ..... одним из видов вооружения современных кораблей.", options: ["составляет", "представляет собой", "является", "обладает"], answer: 2, explanation: "Cấu trúc 'является + Cách 5' (là một trong những...)." },
+            { q: "Человек, … над своими словами, всегда кажется умнее.", options: ["думав", "думавший", "думающий", "думает"], answer: 2, explanation: "Dùng tính động từ hiện tại 'думающий' để chỉ bản chất thường xuyên (người hay suy nghĩ)." },
+            { q: "Немного …, он пошёл обедать.", options: ["работав", "работая", "работает", "поработав"], answer: 3, explanation: "Trạng động từ hoàn thành 'поработав' (sau khi làm việc một chút)." },
+            { q: "Почему ты не спрашиваешь, как у меня … дела?", options: ["едут", "ходят", "идут", "летят"], answer: 2, explanation: "Cụm 'Как дела идут?' mang nghĩa 'Công việc tiến triển thế nào?'." },
+            { q: "На собрании … все студенты.", options: ["преобладали", "присутствовали", "есть", "встречались"], answer: 1, explanation: "'присутствовать' (có mặt). Tất cả sinh viên đã có mặt tại cuộc họp." },
+            { q: "Народная медицина … в деревнях и маленьких городах.", options: ["водится", "распространена", "есть", "хранится"], answer: 1, explanation: "'распространена' (được phổ biến/lan rộng). Y học cổ truyền rất phổ biến ở các vùng quê." },
+            { q: "Она получает около … тысяч рублей в месяц.", options: ["сот", "ста", "сто", "стами"], answer: 1, explanation: "Giới từ 'около' + Cách 2. Số 100 ở Cách 2 là 'ста'." },
+            { q: "Каждую осень наш ребёнок … гриппом.", options: ["заболел", "болеет", "больной", "болел"], answer: 1, explanation: "'Каждую осень' chỉ sự lặp lại ở hiện tại -> động từ thể chưa hoàn thành 'болеет'." },
+            { q: "Современные системы управления ЗУР .... на три типа.", options: ["делят", "подразделяется", "делятся", "делится"], answer: 2, explanation: "Hệ thống (số nhiều) được chia thành -> делятся." },
+            { q: "Войска противовоздушной обороны .... средством прикрытия группировок...", options: ["составляют", "представляют собой", "служит", "служат"], answer: 3, explanation: "Quân đội (số nhiều) đóng vai trò làm phương tiện -> служат средством." },
+            { q: "Современные торпедные катера водоизмещением 80 - 240 тонн .... главным образом для нанесения ударов...", options: ["предназначен", "предназначены", "предназначена", "предназначено"], answer: 1, explanation: "Chủ ngữ số nhiều 'катера' (các tàu) -> предназначены (được chỉ định/thiết kế)." },
+{ q: "Человек, …. только плохое о других, сам плохой.", options: ["говорящий", "сказанный", "скажет", "сказавший"], answer: 0, explanation: "Thói quen thường xuyên nói xấu -> tính động từ chủ động hiện tại 'говорящий'." },
+            { q: "Каждый раз, … со своими друзьями, он очень радовался.", options: ["встречая", "встречаясь", "встретившись", "встречавшись"], answer: 1, explanation: "'Каждый раз' là hành động lặp lại đồng thời -> trạng động từ chưa hoàn thành 'встречаясь'." },
+            { q: "Она вышла замуж и сейчас … другую фамилию.", options: ["возит", "носит", "несёт", "ходит"], answer: 1, explanation: "Cụm 'носить фамилию' (mang họ). Hiện tại cô ấy mang họ khác." },
+            { q: "Речь идёт о … компаниях!", options: ["пятистам", "пятистах", "пятьсот", "пятисот"], answer: 1, explanation: "Giới từ 'о' + Cách 6 số nhiều. 500 ở Cách 6 là 'пятистах'." },
+            { q: "Этот студент не … на занятиях уже месяц.", options: ["имелся", "есть", "появлялся", "встречался"], answer: 2, explanation: "'не появлялся' (đã không xuất hiện/không đi học) trong suốt 1 tháng qua." },
+            { q: "Он был очень … . Никто не знал, выздоровеет ли он.", options: ["болен", "больно", "болел", "больной"], answer: 0, explanation: "Sau động từ 'быть' dùng tính từ đuôi ngắn 'болен' để chỉ trạng thái ốm nặng lúc đó." },
+            { q: "Слово … большой силой.", options: ["обитает", "есть", "имеет", "обладает"], answer: 3, explanation: "'обладать' + Cách 5. Lời nói có (sở hữu) sức mạnh to lớn." },
+            { q: "Движение ракеты корректируется радиокомандовами, .... подаются с командного пункта.", options: ["которое", "которыми", "которые", "которых"], answer: 2, explanation: "Mệnh đề quan hệ: Các lệnh (số nhiều) được đưa ra -> которые." },
+            { q: "По принципу действия системы управления полётом управляемых ракет .... на атомное управление, телеуправление...", options: ["подразделяются", "разделяется", "подразделяют", "делится"], answer: 0, explanation: "Các hệ thống (số nhiều) được chia thành -> подразделяются." },
+            { q: "Военно-транспортная авиация ..... обеспечивать манёвр войск...", options: ["способен", "способны", "могут", "способна"], answer: 3, explanation: "Авиация (giống cái số ít) có khả năng -> способна." },
+            { q: "Он – … муж, хороший отец, прекрасный человек.", options: ["любимый", "любивший", "любит", "любящий"], answer: 3, explanation: "'любящий муж' (một người chồng biết yêu thương - tính động từ chủ động dùng như tính từ)." },
+            { q: "Вчера, случайно … на улице со старым другом, Карл не узнал его.", options: ["встретившись", "встречая", "встречаясь", "встречавшись"], answer: 0, explanation: "Hành động gặp gỡ xảy ra một lần và hoàn thành trước hành động 'không nhận ra' -> gặp xong rồi mới không nhận ra -> встретившись." },
+            { q: "Куда ты … эти книги? — В библиотеку.", options: ["ведёшь", "везёшь", "носишь", "несёшь"], answer: 3, explanation: "Động từ 'нести' (mang, vác bằng tay) đi theo 1 hướng nhất định. Chia ngôi 'ты' là 'несёшь'." },
+            { q: "… детей укрепило их семью.", options: ["становление", "возникновение", "появление", "бытие"], answer: 2, explanation: "'Появление детей' (Sự ra đời/xuất hiện của những đứa trẻ) đã củng cố gia đình họ." },
+            { q: "Более …. человек вышли на демонстрацию протеста.", options: ["четырьмястами", "четыреста", "четрёхсот", "четырёмстам"], answer: 2, explanation: "Giới từ 'Более' (hơn) đi với Cách 2. 400 ở Cách 2 là 'четрёхсот'." },
+            { q: "Этим учёным … новое лекарство.", options: ["будет", "появляется", "создаётся", "возникает"], answer: 2, explanation: "Câu bị động: Một loại thuốc mới đang được tạo ra bởi nhà khoa học này -> создаётся." },
+            { q: "Вы должны принимать эти … три раза в день после еды.", options: ["капля", "лекарство", "таблетки", "микстуры"], answer: 2, explanation: "Đại từ 'эти' số nhiều -> danh từ số nhiều. 'таблетки' là thuốc viên." },
+            { q: "Ракеты общей огневой поддержки войск применяются для уничтожения объектов, ..... расположены в тактической глубине обороны.", options: ["которые", "которых", "которой", "которым"], answer: 0, explanation: "Các mục tiêu (số nhiều) được bố trí ở... -> 'которые' làm chủ ngữ cho mệnh đề phụ." },
+            { q: "В зависимости от вида ...... топлива двигатели ракет мoгут быть воздушно - реактивными или жидкостно - реактивными.", options: ["используемые", "используемого", "используемая", "используемых"], answer: 1, explanation: "Sự phụ thuộc vào loại của NHIÊN LIỆU ĐƯỢC SỬ DỤNG. Cần Cách 2 giống trung -> используемого." },
+            { q: "Ракеты ближнего боя ...... индивидуальным оружием мотопехоты.", options: ["являются", "представляют собой", "составляют", "имеются"], answer: 0, explanation: "Cấu trúc 'являться + Cách 5' (là...). Tên lửa là vũ khí cá nhân." },
+            { q: "Клиент, …. несколько минут назад, ждёт вас в кабинете.", options: ["приходящий", "приходит", "пришедший", "приходивший"], answer: 2, explanation: "Khách hàng ĐÃ ĐẾN cách đây vài phút và giờ đang đợi (kết quả hành động còn lưu lại hiện tại) -> tính động từ hoàn thành quá khứ 'пришедший'." },
+            { q: "… искусством, он поехал в Италию.", options: ["интересовался", "интересовавшись", "интересуя", "интересуясь"], answer: 3, explanation: "Động từ 'интересоваться' khi chuyển thành trạng động từ chưa hoàn thành là 'интересуясь' (Vì quan tâm đến nghệ thuật, anh ấy đã đi Ý)." },
+            { q: "Куда ты едешь? — На дачу. Я … туда вещи.", options: ["несу", "вожу", "веду", "везу"], answer: 3, explanation: "Đi bằng phương tiện (едешь) thì mang đồ theo cũng phải dùng động từ chuyển chở bằng phương tiện 1 hướng -> везу." },
+            { q: "… ты будешь звонить родителям, передай им привет от меня!", options: ["Пока", "Как", "Во время", "Когда"], answer: 3, explanation: "Liên từ thời gian 'Когда' (Khi nào bạn gọi cho bố mẹ...)." },
+            { q: "У меня имеется … о наших конкурентах.", options: ["данные", "сведения", "информация", "власть"], answer: 2, explanation: "Động từ 'имеется' chia ở số ít nên chủ ngữ Cách 1 cũng phải số ít -> 'информация' (thông tin)." },
+            { q: "… пациенту выписали неправильное лекарство!", options: ["восемьдесят одному", "восьмидесяти одном", "восьмидесяти одного", "восьмидесяти одному"], answer: 3, explanation: "Cần số đếm ở Cách 3 (Dative) để hợp với 'пациенту'. 81 ở Cách 3 là 'восьмидесяти одному'." },
+            { q: "В этом регионе существует старинный … .", options: ["обычай", "традиции", "система", "сведения"], answer: 0, explanation: "Tính từ 'старинный' là giống đực số ít nên danh từ đi kèm cũng phải giống đực số ít -> 'обычай' (phong tục)." },
+            { q: "Ракетные двигатели твёрдого топлива применяются главным образом .... боевых неуправляемых ракетах.", options: ["при", "на", "в", "о"], answer: 2, explanation: "Được áp dụng TRONG các loại tên lửa -> giới từ 'в' + Cách 6." },
+            { q: "Наиболее распространенными .... неуправляемые ракеты класса «земля – земля».", options: ["являются", "представляет собой", "называютcя", "имеются"], answer: 0, explanation: "Cấu trúc 'являться + Cách 5'. Chủ ngữ là 'ракеты' (số nhiều) -> являются." },
+            { q: "Несамоходная установка ракеты .... на переносную и буксируемую.", options: ["разделяютcя", "деляться", "подразделяется", "включает"], answer: 2, explanation: "Hệ thống lắp đặt (số ít) được phân chia thành -> подразделяется." },
+            { q: "Интересно, как чувствует себя человек, …. пять литров пива?", options: ["пьёт", "выпивший", "пьющий", "пивший"], answer: 1, explanation: "Người ĐÃ UỐNG xong 5 lít bia (có kết quả) -> dùng tính động từ hoàn thành quá khứ 'выпивший'." },
+            { q: "В детстве всей душой … японские мультфильмы, она начала изучать японский.", options: ["любил", "любя", "любив", "полюбив"], answer: 3, explanation: "Trạng động từ hoàn thành 'полюбив' (Sau khi trót đem lòng yêu thích... thì cô ấy bắt đầu học)." },
+            { q: "Я всегда … с собой карту города.", options: ["несу", "ношу", "вожу", "веду"], answer: 1, explanation: "Mang theo bên mình như một thói quen thường xuyên -> động từ đa hướng 'носить' chia thành 'ношу'." },
+            { q: "Москва ... столицей Российской Федерации.", options: ["является", "существует", "достигает", "считается"], answer: 0, explanation: "Moscow LÀ thủ đô... -> động từ 'является' + Cách 5." },
+            { q: "В мире … более 200 языков.", options: ["имеется", "обладает", "существует", "имеет"], answer: 2, explanation: "Tồn tại trên thế giới -> động từ 'существует'." },
+            { q: "Мне не хватило … рублей, чтобы купить эту юбку!", options: ["семидесяти двум", "семидесяти два", "семидесяти двух", "семьдесят два"], answer: 2, explanation: "Động từ 'не хватить' (thiếu) yêu cầu Cách 2. 72 rúp ở Cách 2 là 'семидесяти двух'." },
+            { q: "Дочка, ты слишком …! Тебе надо больше есть!", options: ["худая", "толстая", "красивая", "полная"], answer: 0, explanation: "Phải ăn nhiều hơn vì quá GẦY -> 'худая'." },
+            { q: "Система телеуправления .... командной аппаратуры и испольнительной аппаратуры.", options: ["вкючает", "включает", "состоят из", "состоит из"], answer: 3, explanation: "Hệ thống BAO GỒM TỪ... Cấu trúc 'состоять из' + Cách 2." },
+            { q: "Вся совокупность приборов для обеспечения движения ракет ........ системой управления.", options: ["называет", "называется", "называть", "называться"], answer: 1, explanation: "Được gọi là (bị động) -> называется + Cách 5." },
+            { q: "Несамоходная установка ракеты подразделяется .... переносную и буксируемую.", options: ["в", "из", "до", "на"], answer: 3, explanation: "Động từ 'подразделяться' đi kèm với giới từ 'на' (phân chia thành)." },
+            { q: "Архитектор, … это здание, был гением!", options: ["строит", "построивший", "строивший", "строительный"], answer: 1, explanation: "Hành động xây dựng đã hoàn thành trong quá khứ đem lại kết quả 'tòa nhà' -> tính động từ hoàn thành 'построивший'." },
+            { q: "… грамматику, не надо забывать и о лексике!", options: ["изучив", "изучая", "изучивший", "изучать"], answer: 1, explanation: "Trong lúc ĐANG HỌC ngữ pháp (hành động song song) -> trạng động từ chưa hoàn thành 'изучая'." },
+            { q: "Мы с братом отлично … машину.", options: ["водим", "везём", "ведём", "несём"], answer: 0, explanation: "Cụm từ cố định 'водить машину' (lái xe). Chủ ngữ 'Мы' -> водим." },
+            { q: "Улицы Москвы всегда ... перед праздниками.", options: ["развиваются", "располагаются", "украшаются", "развиваться"], answer: 2, explanation: "Các đường phố LUÔN ĐƯỢC TRANG HOÀNG -> động từ bị động 'украшаются'." },
+            { q: "У кого … эта информация?", options: ["существует", "имеет", "обладает", "есть"], answer: 3, explanation: "Cấu trúc sở hữu phổ biến: 'У кого есть что?' (Ai có cái gì?)." },
+            { q: "После … она решила выйти на пенсию.", options: ["пятидесяти восьми", "пятьдесят восемь", "пятьюдесятью восьмью", "пятьдесят восьми"], answer: 0, explanation: "Giới từ 'После' đi với Cách 2. Số 58 ở Cách 2 là 'пятидесяти восьми'." },
+            { q: "Она … раз переписывала свою дипломную работу.", options: ["столько", "сколько", "несколько", "нисколько"], answer: 2, explanation: "Cô ấy đã viết lại khóa luận MỘT VÀI LẦN -> 'несколько'." },
+            { q: "Военно - Воздушные Силы - высокоманёвренный вид Вооружённых Сил и ...... дальнюю, фронтовую и военно- транспортную авиацию.", options: ["находятся", "состоят из", "включают", "обладают"], answer: 2, explanation: "Lực lượng Không quân BAO GỒM các loại hàng không... -> 'включают' (+ Cách 4)." },
+            { q: "Сухопутные войска ...... самостоятельно или во взаимодействии с другими видами Вооружённых Сил решать крупные оперативно- стратегические задачи.", options: ["может", "способны", "способен", "способна"], answer: 1, explanation: "Quân đội lục quân (số nhiều) CÓ KHẢ NĂNG -> tính từ đuôi ngắn số nhiều 'способны'." },
+            { q: "Противотанковая ракета ..... для борьбы с танками и бронированной техникой.", options: ["предназначена", "служат", "используются", "включает"], answer: 0, explanation: "Tên lửa chống tăng (giống cái số ít) ĐƯỢC CHỈ ĐỊNH/THIẾT KẾ để -> 'предназначена'." }
+            // Dán thêm khoảng vài chục câu trắc nghiệm văn bản cũ của bạn vào đây
+        ];
+
+        // ==========================================
+        // 4. NGÂN HÀNG ĐỌC HIỂU & VIẾT LẠI (Tóm tắt lại làm mẫu)
+        // ==========================================
+        const readingBank = [
+            {
+               title: "Текст 1: Праздник входит в дом",
+                content: "<p>Праздник входит в дом... Это значит в дом приходят радость и веселье, шутки и смех. В доме звучит музыка, собираются родные, близкие люди, чтобы поздравить друг друга, сказать друг другу добрые слова. Праздников много – они разные: большие и маленькие, общенародные, государственные и личные, семейные.</p><p>Но в каждой стране всегда есть свои самые любимые праздники. В России, безусловно, таким праздником и для детей, и для взрослых стал Новый год. Почему? Ответ в самом названии: «новый...» – это новые планы, новые цели, это надежда на лучшее будущее, это ожидание счастливых перемен в жизни. Поэтому все так ждут Новый год, к нему заранее готовятся: покупают друг другу подарки, в домах наряжают ёлку, готовят праздничный стол.</p><p>В ночь с 31 декабря на 1 января родные и близкие собираются вместе дома за праздничным столом. Перед наступлением Нового года обычно смотрят праздничный концерт, слушают поздравления президента, а потом бой часов на Спасской башне Кремля. Когда стрелки показывают 12, все встают, поднимают бокалы, обнимаются и поздравляют друг друга. Новогодние подарки открывают только после наступления Нового года. Причём взрослые радуются им не меньше, чем малыши.</p>",
+                questions: [
+                    { q: "Когда праздник входит в дом, ______.", options: ["все в семье радуются и смеются", "родные прощаются и уходят", "в доме шумно и беспорядочно", "радость и веселье вместе уходят"], answer: 0, exp: "Đoạn 1: 'в дом приходят радость и веселье, шутки и смех'." },
+                    { q: "Праздников много, но большинство россиян предпочитают ______.", options: ["семейный праздник", "свой день рождения", "Новый год", "международный праздник"], answer: 2, exp: "Đoạn 2: 'В России... самым любимым праздником стал Новый год.'" },
+                    { q: "Перед Новым годом люди ______.", options: ["не дарят друг другу подарки", "собираются вместе на работе", "наряжают ёлку и готовят праздничные блюда", "уезжают за границу"], answer: 2, exp: "Đoạn 2: 'к нему заранее готовятся: покупают подарки... наряжают ёлку, готовят праздничный стол.'" },
+                    { q: "Накануне Нового года ______.", options: ["родные и близкие поздравляют Деда Мороза", "люди обычно спят", "собираются дома, смотрят телевизор и ждут бой часов", "Дед Мороз поздравляет артистов"], answer: 2, exp: "Đoạn 3: 'собираются вместе дома... смотрят праздничный концерт... ждут бой часов.'" },
+                    { q: "После наступления Нового года ______.", options: ["люди открывают лежащие под ёлкой подарки", "люди дарят подарки Деду Морозу", "все идут спать", "слушают поздравления президента"], answer: 0, exp: "Đoạn cuối: 'Открывают подарки только после наступления Нового года.'" }
+                ]
+            },
+            {
+                title: "Текст 2: Самый замечательный человек",
+                content: "<p>Самый замечательный человек, которого я когда-либо знал, — это моя прабабушка. Она в прошлом году умерла, но в моей памяти она останется навсегда живой. Я часто расспрашивал бабулю о том, что она пережила за свои 80 лет. Моя прабабушка Мария Сергеевна родилась и почти всю жизнь прожила в Брянской области. Начало войны застало её в деревне. Бабушка работала в колхозе.</p><p>Когда в 1941 году до деревни дошли фашисты, бабуля ушла в лес – она стала воевать против врагов, стала партизанкой. В партизанском отряде бабушка готовила еду. Через некоторое время она влюбилась в моего будущего прадедушку Павла Ивановича. Скромно сыграли свадьбу: прадедушка воевал, прабабушка варила обеды.</p><p>С одного боевого задания Павел не вернулся. Прабабушка, которая уже ждала моего дедушку, осталась одна. Она отправилась в свою деревню. Немцы схватили молодую партизанку и отправили в лагерь. Там прабабушка родила моего дедушку. Такие истории, которые рассказывала мне моя прабабушка, сделали для меня историю моей Родины гораздо ближе.</p>",
+                questions: [
+                    { q: "Автор рассказывает о ..... .", options: ["своей бабушке", "маме своего отца", "маме своего дедушки", "маме своей мамы"], answer: 2, exp: "Người được kể là 'прабабушка' (Cụ). Cụ đã sinh ra ông nội/ngoại ('прабабушка родила моего дедушку') -> Cụ là mẹ của ông." },
+                    { q: "Когда началась война, Мария была .... .", options: ["рабочей", "колхозницей", "домохозяйкой", "учительницей"], answer: 1, exp: "Trong bài viết: 'Бабушка работала в колхозе' -> колхозница." },
+                    { q: "В отряде Мария .... .", options: ["воевала", "варила еду", "лечила", "шила одежду"], answer: 1, exp: "Đoạn 2: 'В партизанском отряде бабушка готовила еду'." },
+                    { q: "Свадьба Марии прошла в .... .", options: ["лесу", "деревне", "городе", "лагере"], answer: 0, exp: "Đám cưới diễn ra khi bà đang ở trong đội du kích (trong rừng)." },
+                    { q: "Автор говорит, что истории его родственницы .... .", options: ["не похожи на официальную историю России", "похожи на интересный роман", "делают ему понятнее историю Родины", "он вспомнил о своей прабабушке"], answer: 2, exp: "Đoạn cuối: 'сделали для меня историю моей Родины гораздо ближе'." }
+                ]
+            },
+            {
+                title: "Текст 3: Как быстро выучить иностранный язык",
+                content: "<p><b>Я говорю!</b> По мнению многих ученых-лингвистов, изучение иностранных языков с помощью разговорников помогает лучше запомнить слова и предложения. Кроме того, человек не просто повторяет рассказ, но и моделирует определенную ситуацию, представляя себя в том или ином положении. Опыт показал, что 98% школьников могли повторить часть текста от первого лица.</p><p><b>Формула.</b> Специалисты вывели идеальную формулу запоминания – 30 слов в день, 5 из которых составляют глаголы. Главное правило – слова необходимо учить ежедневно, не давая себе выходных.</p><p><b>Песни.</b> Самый приятный и эффективный метод – заучивание иностранных песен. Ученик учится правильной интонации и запоминает выражения.</p><p><b>Общее поле.</b> Не думайте, что нужно понимать каждое слово. Важно понимать общий смысл. Приятного аппетита! Говорить на языке необходимо с самого первого дня, описывая все вокруг. Так взрослый становится ребёнком – и может быстро начать говорить на новом языке (человек учит слова, а потом уже понимает грамматику).</p>",
+                questions: [
+                    { q: "Автор текста думает, что полезно учить язык по разговорнику, потому что …", options: ["в разговорнике интереснее тексты и картинки", "человек моделирует ситуацию и говорит от своего лица", "в разговорнике меньше страниц", "в разговорнике мало новых слов"], answer: 1, exp: "Theo đoạn 1: 'моделирует определенную ситуацию... опыт от первого лица'." },
+                    { q: "В тексте советуют учить слова …", options: ["каждый день", "несколько раз в день", "через день", "два раза в день"], answer: 0, exp: "Đoạn 2: 'слова необходимо учить ежедневно'." },
+                    { q: "Песни - это хороший способ запомнить ...", options: ["культурные традиции", "предложения", "слова и интонацию", "русскую грамматику"], answer: 2, exp: "Đoạn 3: 'учится правильной интонации и запоминает особенные слова'." },
+                    { q: "Автор текста говорит, что важно понимать …., а не отдельные слова.", options: ["ситуацию", "культуру", "общий смысл (идею)", "новые слова и грамматику"], answer: 2, exp: "Đoạn 4: 'На самом деле важно понимать общий смысл'." },
+                    { q: "Из взрослого стать ребёнком, таким образом человек …", options: ["запоминает слова и выражения", "понимает грамматику", "не боится быстро начать говорить", "учит новые слова"], answer: 2, exp: "Đoạn cuối: trở thành trẻ con giúp 'быстро начать говорить на новом языке'." }
+                ]
+            },
+            {
+                title: "Текст 4: Андроников монастырь",
+                content: "<p>На берегу реки Яузы, напротив Кремля, находится Андроников монастырь – одно из самых интересных и замечательных мест Москвы. На территории этого монастыря можно увидеть самое старое здание Москвы, сохранившееся до наших дней – Спасский собор.</p><p>Андроников монастырь хранит память об интересных событиях русской истории и об Андрее Рублёве – великом художнике XIV-XV веков. Андрей Рублёв был монахом Андроникова монастыря, здесь провёл он последние годы своей жизни, здесь умер и здесь был похоронен.</p><p>В 1947 году, когда Москве исполнилось 800 лет, в стенах монастыря был создан музей древнерусского искусства. В залах музея хранится уникальная коллекция древнерусского искусства, широко известная как в нашей стране, так и в мире. В музее посетители могут познакомиться с московской школой живописи конца XV века, с известными во всём мире русскими иконами. В музее можно также посмотреть и другие произведения искусства: резьбу по дереву и камню, старинные рукописи и книги.</p>",
+                questions: [
+                    { q: "Андроников монастырь находится …", options: ["на территории Кремля", "далеко от Кремля", "недалеко от Кремля", "за городом"], answer: 2, exp: "Nằm 'напротив Кремля' (đối diện điện Kremlin) tức là không xa." },
+                    { q: "Самое старое здание Москвы находится на …", options: ["берегу реки Яузы", "территории Кремля", "территории монастыря", "площади"], answer: 2, exp: "Đoạn 1: 'На территории этого монастыря можно увидеть самое старое здание...'." },
+                    { q: "Андрей Рублёв - …", options: ["древнерусский художник", "художник XIX века", "современный художник", "архитектор"], answer: 0, exp: "Ông là họa sĩ vĩ đại thế kỷ 14-15 -> họa sĩ Nga cổ." },
+                    { q: "Музей А. Рублёва был открыт в … ХХ века.", options: ["начале", "середине", "конце", "конце 19 века"], answer: 1, exp: "Khai trương năm 1947 -> giữa thế kỷ 20." },
+                    { q: "В музее можно увидеть …", options: ["только древнерусские иконы", "иконы и старинные книги", "разные произведения искусства", "картины 19 века"], answer: 2, exp: "Đoạn cuối liệt kê rất nhiều: tranh thánh, chạm khắc gỗ, đá, bản thảo -> Nhiều tác phẩm nghệ thuật khác nhau." }
+                ]
+            },
+            {
+                title: "Текст 5: Почему нужно беречь природу",
+                content: "<p>Мы живём в XXI веке. Сейчас много говорят о проблемах экологии. Раньше этот вопрос не обсуждался так серьёзно. Мы считали, что наша планета очень большая, что на ней много чистой воды и воздуха, животных и растений. По этой причине люди не думали о том, сколько времени они смогут пользоваться подарками природы. К сожалению, люди ошиблись. Оказалось, что природные богатства не вечные, они исчезают.</p><p>Быстрое развитие науки и техники, рост населения, хозяйственная деятельность людей являются причиной загрязнения окружающей среды. Из-за этого воздух, вода, земля находятся в катастрофическом состоянии. Сегодня учёные говорят об экологическом кризисе: погибают леса и реки, вода и воздух становятся опасными.</p><p>Человек должен найти выход из кризиса. Космонавты говорят, что из космоса наша планета кажется очень маленькой и беззащитной. Охрана окружающей среды – это наша общая забота. Только благодаря общим усилиям люди смогут сохранить природу. Наша планета Земля – это наш общий дом.</p>",
+                questions: [
+                    { q: "Что думали люди о природных богатствах раньше?", options: ["Они думали, что природных богатств мало.", "Они думали, что Земля очень большая и богатств много.", "Они думали, что богатства будут исчезать.", "Они думали, что чистой воды мало."], answer: 1, exp: "Đoạn 1: 'считали, что наша планета очень большая, что на ней много чистой воды...'" },
+                    { q: "Почему окружающая среда загрязняется?", options: ["Из-за развития науки, роста населения и деятельности людей.", "Из-за космонавтов.", "Из-за животных и растений.", "Из-за того, что планета маленькая."], answer: 0, exp: "Đoạn 2 nêu rõ 3 nguyên nhân này." },
+                    { q: "Почему в настоящее время учёные говорят об экологическом кризисе?", options: ["Появляются новые леса.", "Раньше этот вопрос обсуждался.", "Только они смогут сохранить природу.", "Погибают леса и реки, вода и воздух становятся опасными."], answer: 3, exp: "Đoạn 2: 'об экологическом кризисе: погибают леса и реки...'" },
+                    { q: "Какова наша планета, по мнению космонавтов?", options: ["Очень большая.", "Большая, но беззащитная.", "Маленькая и беззащитная.", "Огромная."], answer: 2, exp: "Đoạn 3: 'из космоса наша планета кажется очень маленькой и беззащитной.'" },
+                    { q: "Благодаря чему люди смогут сохранить природу?", options: ["Развитию науки.", "Только общим усилиям.", "Космонавтам.", "Учёным."], answer: 1, exp: "Đoạn cuối: 'Только благодаря общим усилиям люди смогут сохранить природу.'" }
+                ]
+            },
+            {
+                title: "Текст 6 (Điền từ 1): Вчера у нас на работе была вечеринка",
+                content: "<p>Вчера у нас на работе была вечеринка, было очень весело. Мы ели, пили, разговаривали, танцевали. <b>(1) _______</b> я пошёл только в 2 часа ночи. Но сегодня я себя ненавижу, <b>(2) _______</b> я давно не чувствовал себя так плохо. Когда у меня похмелье (nôn nao), это ужасно! Голова болит, сердце болит... У меня болит все. Я ничего не могу <b>(3) _______</b>. Ну почему я не послушал вчера друга?! Он советовал не пить пиво и вино после водки и коньяка, <b>(4) _______</b> утром чувствовать себя хорошо. И выпил я не так много: две рюмки коньяка, потом бокал вина, потом стопки две <b>(5) _______</b> и бутылку пива.</p><p>Я редко пью алкоголь, но могу выпить больше, чем выпил вчера. И утром всегда чувствую себя нормально. А сегодня... Хорошо, что сегодня суббота и я не должен идти <b>(6) _______</b> работу. Пять минут назад <b>(7) _______</b> мой друг и посоветовал выпить 50 грамм водки. Он сказал, что <b>(8) _______</b> я так сделаю, то сразу почувствую себя лучше. Но как это сделать? Сейчас я на водку даже смотреть не могу ... Жена советует пойти в баню. Сначала я пойду <b>(9) _______</b> и куплю таблетку от похмелья, потому что огурцы жена в этом году не солила. Больше никогда не <b>(10) _______</b> так пить!</p>",
+                questions: [
+                    { q: "Chọn từ điền vào vị trí (1):", options: ["Дом", "Домой", "Дома", "Доме"], answer: 1, exp: "Hướng chuyển động về nhà -> Домой." },
+                    { q: "Chọn từ điền vào vị trí (2):", options: ["поэтому", "так как", "ведь", "потому что"], answer: 3, exp: "Chỉ nguyên nhân -> потому что." },
+                    { q: "Chọn từ điền vào vị trí (3):", options: ["делал", "делать", "делаю", "буду делать"], answer: 1, exp: "Sau 'могу' dùng nguyên thể -> делать." },
+                    { q: "Chọn từ điền vào vị trí (4):", options: ["что", "но", "чтобы", "а"], answer: 2, exp: "Chỉ mục đích -> чтобы." },
+                    { q: "Chọn từ điền vào vị trí (5):", options: ["водки", "водка", "водке", "водкой"], answer: 0, exp: "Sau số lượng dùng Cách 2 -> водки." },
+                    { q: "Chọn từ điền vào vị trí (6):", options: ["по", "на", "у", "в"], answer: 1, exp: "Đi làm -> идти на работу." },
+                    { q: "Chọn từ điền vào vị trí (7):", options: ["звонил", "звонит", "позвонил", "звонят"], answer: 2, exp: "Hành động hoàn thành 1 lần trong quá khứ -> позвонил." },
+                    { q: "Chọn từ điền vào vị trí (8):", options: ["чтобы", "если", "кто", "где"], answer: 1, exp: "Điều kiện (nếu) -> если." },
+                    { q: "Chọn từ điền vào vị trí (9):", options: ["в аптеке", "на аптеку", "в аптеку", "на аптеке"], answer: 2, exp: "Đi đến hiệu thuốc -> в аптеку." },
+                    { q: "Chọn từ điền vào vị trí (10):", options: ["буду", "будет", "быть", "был"], answer: 0, exp: "Tôi sẽ không -> не буду." }
+                ]
+            },
+            {
+                title: "Текст 7 (Điền từ 2): Пётр Ильич жил в Клину",
+                content: "<p>Пётр Ильич жил в Клину. Он не любил <b>(1) _______</b> из своего дома. Он говорил, что только у себя он <b>(2) _______</b> работать. Но в октябре 1893 года ему необходимо было поехать в Петербург, где первый раз должны <b>(3) _______</b> исполнять его симфонию.</p><p>16 октября был концерт. <b>(4) _______</b> Чайковский появился в оркестре, в зале все встали. Он занял своё место и поднял руки. Музыка Шестой симфонии рассказывала людям о жизни <b>(5) _______</b>: юность, первые радости, счастье любви, горе и в конце жизни – смерть. Всё ниже, всё тише <b>(6) _______</b> музыка. Всё. Чайковский опустил руки.</p><p>В зале <b>(7) _______</b> тихо. Никто не встал с места, никто не пошёл к выходу – такое сильное впечатление произвела на <b>(8) _______</b> музыка. После концерта Пётр Ильич сказал: «Я никогда не был так доволен <b>(9) _______</b>, так рад, так счастлив, что сделал хорошую вещь». <b>(10) _______</b> несколько дней после этого исполнения Чайковский умер.</p>",
+                questions: [
+                    { q: "Chọn từ điền vào vị trí (1):", options: ["уехать", "уезжать", "выйти", "пойти"], answer: 1, exp: "Không thích rời đi (hành động thường xuyên) -> Thể chưa hoàn thành 'уезжать'." },
+                    { q: "Chọn từ điền vào vị trí (2):", options: ["может", "можно", "нравится", "хочется"], answer: 0, exp: "Ông ấy (Cách 1) có thể làm việc -> может." },
+                    { q: "Chọn từ điền vào vị trí (3):", options: ["был", "было", "были", "будет"], answer: 2, exp: "Họ (ẩn số nhiều) đã phải trình diễn -> были." },
+                    { q: "Chọn từ điền vào vị trí (4):", options: ["Как", "Что", "Почему", "Когда"], answer: 3, exp: "Khi (thời gian) -> Когда." },
+                    { q: "Chọn từ điền vào vị trí (5):", options: ["человек", "человека", "человечества", "человеку"], answer: 1, exp: "Về cuộc đời CỦA con người -> Cách 2 'человека'." },
+                    { q: "Chọn từ điền vào vị trí (6):", options: ["звучала", "кончила", "слышала", "начала"], answer: 0, exp: "Âm nhạc vang lên -> звучала." },
+                    { q: "Chọn từ điền vào vị trí (7):", options: ["все", "всё", "было", "были"], answer: 2, exp: "Trạng thái quá khứ -> было тихо." },
+                    { q: "Chọn từ điền vào vị trí (8):", options: ["всего", "всех", "все", "всем"], answer: 1, exp: "Gây ấn tượng LÊN mọi người -> на всех." },
+                    { q: "Chọn từ điền vào vị trí (9):", options: ["мной", "себя", "с собой", "собой"], answer: 3, exp: "Hài lòng với bản thân -> доволен собой." },
+                    { q: "Chọn từ điền vào vị trí (10):", options: ["За", "До", "Через", "Прошло"], answer: 2, exp: "Sau đó vài ngày -> Через несколько дней." }
+                ]
+            }
+        ];
+
+        // ==========================================
+        // 3. NGÂN HÀNG VIẾT LẠI CÂU (41 CÂU TỪ TÀI LIỆU)
+        // ==========================================
+        const rewriteBank = [
+            { 
+                q: "1. Мой брат очень любит изучать иностранный язык. \n=> Мой брат ...", 
+                ans: ["интересуется изучением иностранного языка"], 
+                exp: "Dùng cấu trúc 'интересоваться + Cách 5' thay cho 'очень любит'." 
+            },
+            { 
+                q: "2. Мой друг серьёзно занимался, поэтому он поступил в институт. \n=> Мой друг серьёзно занимался, ...", 
+                ans: ["поэтому поступил в институт", "благодаря чему он поступил в институт"], 
+                exp: "Giữ nguyên ý nguyên nhân - kết quả." 
+            },
+            { 
+                q: "3. Мы прочитали рассказ о девушке, которая мечтает стать художницей. \n=> Мы прочитали рассказ о девушке ...", 
+                ans: ["мечтающей стать художницей"], 
+                exp: "Thay mệnh đề 'которая мечтает' bằng tính động từ chủ động hiện tại Cách 6 'мечтающей'." 
+            },
+            { 
+                q: "4. Студенты должны сдать учебники, которые взяли в библиотеке. \n=> Студенты должны сдать учебники, ...", 
+                ans: ["взятые в библиотеке"], 
+                exp: "Dùng tính động từ bị động quá khứ Cách 4 số nhiều 'взятые'." 
+            },
+            { 
+                q: "5. На вечер пришли студенты, которые окончили наш университет. \n=> На вечер пришли студенты, ...", 
+                ans: ["окончившие наш университет"], 
+                exp: "Dùng tính động từ chủ động quá khứ Cách 1 số nhiều 'окончившие'." 
+            },
+            { 
+                q: "6. Проблема, которую изучают учёные, очень сложная. \n=> Проблема, ...", 
+                ans: ["изучаемая учёными, очень сложная", "изучаемая учеными очень сложная"], 
+                exp: "Mệnh đề quan hệ bị động đổi thành tính động từ bị động hiện tại Cách 1 'изучаемая'." 
+            },
+            { 
+                q: "7. Мы живём в доме, который мой папа построил 2 года назад. \n=> Мы живём в доме, ...", 
+                ans: ["построенном моим папой 2 года назад", "построенном моим папой два года назад"], 
+                exp: "Mệnh đề bị động quá khứ Cách 6 'построенном'." 
+            },
+            { 
+                q: "8. Эта картина была нарисована московской художницей. \n=> Московская художница ...", 
+                ans: ["нарисовала эту картину"], 
+                exp: "Chuyển từ câu bị động sang câu chủ động." 
+            },
+            { 
+                q: "9. Поезд медленнее, чем самолёт. \n=> Поезд медленнее ...", 
+                ans: ["самолёта", "самолета"], 
+                exp: "Bỏ 'чем', danh từ so sánh phía sau chuyển sang Cách 2." 
+            },
+            { 
+                q: "10. Этот город считается самым крупным в мире. \n=> Этот город считается ...", 
+                ans: ["крупнейшим в мире", "крупнейшим"], 
+                exp: "Dùng so sánh tuyệt đối dạng ngắn gọn 'крупнейшим' thay cho 'самым крупным'." 
+            },
+            { 
+                q: "11. Игорь пишет письма чаще Андрея. \n=> Андрей пишет письма ...", 
+                ans: ["реже Игоря", "реже чем Игорь", "реже, чем Игорь"], 
+                exp: "Đảo ngược ý nghĩa so sánh: 'чаще' (thường xuyên hơn) thành 'реже' (hiếm khi hơn)." 
+            },
+            { 
+                q: "12. Мы опоздали на урок, так как был сильный дождь. \n=> Мы опоздали на урок ...", 
+                ans: ["из-за сильного дождя"], 
+                exp: "Thay mệnh đề nguyên nhân bằng cụm giới từ 'из-за' + Cách 2." 
+            },
+            { 
+                q: "14. На вечер пришли студенты, которые окончили наш университет. \n=> На вечер пришли студенты, ...", 
+                ans: ["окончившие наш университет"], 
+                exp: "Tính động từ chủ động quá khứ Cách 1 số nhiều 'окончившие'." 
+            },
+            { 
+                q: "15. Его дом больше, чем мой дом. \n=> Его дом больше ...", 
+                ans: ["моего дома", "моего"], 
+                exp: "Cấu trúc so sánh hơn không có 'чем': danh từ sau đổi sang Cách 2." 
+            },
+            { 
+                q: "16. Он самый старый человек в этом городе. \n=> В этом городе ...", 
+                ans: ["он старше всех", "нет человека старше его", "он самый старый человек"], 
+                exp: "Có thể diễn đạt 'già nhất' bằng cụm 'старше всех'." 
+            },
+            { 
+                q: "17. Урожай получился богатым, потому что погода была хорошая. \n=> Урожай получился богатым ...", 
+                ans: ["благодаря хорошей погоде"], 
+                exp: "Nguyên nhân mang ý nghĩa tích cực, dùng giới từ 'благодаря' + Cách 3." 
+            },
+            { 
+                q: "18. Этот дом был построен моим отцом. \n=> Этот дом ...", 
+                ans: ["построил мой отец"], 
+                exp: "Chuyển từ câu bị động sang câu chủ động (Кто построил что)." 
+            },
+            { 
+                q: "19. Мне часто звонит друг, который живёт в Ханое. \n=> Мне часто звонит друг, ...", 
+                ans: ["живущий в Ханое"], 
+                exp: "Mệnh đề chủ động hiện tại đổi thành tính động từ 'живущий'." 
+            },
+            { 
+                q: "20. Директор академии поздравил курсантов, которые победили на Олимпиаде по русскому языку. \n=> Директор академии поздравил курсантов, ...", 
+                ans: ["победивших на Олимпиаде по русскому языку"], 
+                exp: "Mệnh đề chủ động quá khứ đổi thành tính động từ Cách 4 số nhiều 'победивших'." 
+            },
+            { 
+                q: "21. Стихи, которые обсуждают на семинаре, были написаны молодым поэтом. \n=> Стихи, ...", 
+                ans: ["обсуждаемые на семинаре, были написаны молодым поэтом", "обсуждаемые на семинаре были написаны молодым поэтом"], 
+                exp: "Mệnh đề bị động hiện tại không ngôi đổi thành tính động từ 'обсуждаемые'." 
+            },
+            { 
+                q: "22. В состав многих стран мира входят ракетные катера, имеющие высокую боевую эффективность. \n=> В состав многих стран мира входят ракетные катера, ...", 
+                ans: ["которые имеют высокую боевую эффективность"], 
+                exp: "Đổi ngược từ Tính động từ 'имеющие' về lại mệnh đề quan hệ với 'которые'." 
+            },
+            { 
+                q: "23. Проблема, исследуемая известным учёным, имеет важное практическое значение. \n=> Проблема, ...", 
+                ans: ["которая исследуется известным учёным, имеет важное практическое значение", "которая исследуется известным ученым имеет важное практическое значение"], 
+                exp: "Tính động từ bị động đổi về mệnh đề quan hệ với động từ phản thân 'исследуется'." 
+            },
+            { 
+                q: "24. Площадь Хошимина больше, чем площадь Нячанга. \n=> Площадь Хошимина больше ...", 
+                ans: ["площади Нячанга"], 
+                exp: "Bỏ 'чем', danh từ 'площадь' đổi thành Cách 2 là 'площади'." 
+            },
+            { 
+                q: "25. Прочитав газету, мы узнали о погоде завтра. \n=> После того как ...", 
+                ans: ["мы прочитали газету, мы узнали о погоде завтра", "мы прочитали газету мы узнали о погоде завтра"], 
+                exp: "Trạng động từ hoàn thành 'Прочитав' đổi thành mệnh đề thời gian quá khứ." 
+            },
+            { 
+                q: "26. Когда студенты выполнили контрольную работу, они уехали из аудитории в общежитие. \n=> После ...", 
+                ans: ["выполнения контрольной работы студенты уехали из аудитории в общежитие", "того как студенты выполнили контрольную работу, они уехали из аудитории в общежитие"], 
+                exp: "Mệnh đề thời gian đổi thành cụm danh từ 'После выполнения' hoặc giữ mệnh đề 'После того как'." 
+            },
+            { 
+                q: "27. Современные подводные лодки и авиация призваны решать главные задачи, стоящие перед силами. \n=> Современные подводные лодки и авиация призваны решать главные задачи, ...", 
+                ans: ["которые стоят перед силами"], 
+                exp: "Tính động từ 'стоящие' đổi thành mệnh đề quan hệ." 
+            },
+            { 
+                q: "28. Студенты внимательно следят за опытом, проводимым преподавателем на уроке физики. \n=> Студенты внимательно следят за опытом, ...", 
+                ans: ["который проводится преподавателем на уроке физики", "который проводит преподаватель на уроке физики"], 
+                exp: "Tính động từ bị động 'проводимым' đổi thành mệnh đề." 
+            },
+            { 
+                q: "29. Русский язык представляет собой один из сложнейших языков в мире. \n=> Русский язык представляет собой ...", 
+                ans: ["один из самых сложных языков в мире"], 
+                exp: "Chuyển cấp so sánh tuyệt đối 'сложнейших' thành 'самых сложных'." 
+            },
+            { 
+                q: "30. Хорошо зная английский язык, ваш друг сможет работать переводчиком. \n=> Если ...", 
+                ans: ["ваш друг будет хорошо знать английский язык, он сможет работать переводчиком", "ваш друг хорошо знает английский язык, он сможет работать переводчиком"], 
+                exp: "Trạng động từ chưa hoàn thành mang ý điều kiện đổi thành mệnh đề 'Если'." 
+            },
+            { 
+                q: "31. Хотя Антон много зарабатывает, он не чувствует себя счастливо. \n=> Несмотря на то что ...", 
+                ans: ["Антон много зарабатывает, он не чувствует себя счастливо"], 
+                exp: "Thay liên từ nhượng bộ 'Хотя' bằng 'Несмотря на то что'." 
+            },
+            { 
+                q: "32. Мы поблагодарили друга, приславшего нам эти красивые фотографии вчера. \n=> Мы поблагодарили друга, ...", 
+                ans: ["который прислал нам эти красивые фотографии вчера"], 
+                exp: "Tính động từ quá khứ 'приславшего' đổi về mệnh đề quan hệ với 'который'." 
+            },
+            { 
+                q: "33. Я часто бываю на выставках, которые организуются молодыми художниками. \n=> Я часто бываю на выставках, ...", 
+                ans: ["организуемых молодыми художниками"], 
+                exp: "Thay mệnh đề bằng tính động từ bị động hiện tại Cách 6 số nhiều 'организуемых'." 
+            },
+            { 
+                q: "34. Торпедное оружие является одним из важнейших средств вооружённой борьбы на море. \n=> Торпедное оружие - ...", 
+                ans: ["одно из важнейших средств вооружённой борьбы на море"], 
+                exp: "Lược bỏ động từ 'является', chuyển bổ ngữ từ Cách 5 về Cách 1, dùng dấu gạch ngang nối." 
+            },
+            { 
+                q: "35. Не поняв значение нового слова, найдите его в словаре. \n=> Если ...", 
+                ans: ["вы не поняли значение нового слова, найдите его в словаре", "ты не понял значение нового слова найди его в словаре"], 
+                exp: "Trạng động từ phủ định chỉ điều kiện chuyển thành mệnh đề 'Если вы не поняли...'." 
+            },
+            { 
+                q: "36. При работе с этим опытным переводчиком Максим знает много новых словосочетаний. \n=> Когда ...", 
+                ans: ["Максим работает с этим опытным переводчиком, он узнаёт много новых словосочетаний"], 
+                exp: "Cụm danh từ 'При работе' đổi thành mệnh đề thời gian." 
+            },
+            { 
+                q: "37. Упражнение, которое выполняет мой товарищ, не очень трудное. \n=> Упражнение, ...", 
+                ans: ["выполняемое моим товарищем, не очень трудное", "выполняемое моим товарищем не очень трудное"], 
+                exp: "Mệnh đề chủ động đổi thành tính động từ bị động hiện tại Cách 1 'выполняемое'." 
+            },
+            { 
+                q: "38. Город Хошимин является крупнейшим городом Вьетнама. \n=> Город Хошимин является ...", 
+                ans: ["самым крупным городом Вьетнама"], 
+                exp: "Thay 'крупнейшим' bằng cụm tương đương 'самым крупным'." 
+            },
+            { 
+                q: "39. Бывая в Санкт-Петербурге, школьники посещают Эрмитаж. \n=> Когда ...", 
+                ans: ["школьники бывают в Санкт-Петербурге, они посещают Эрмитаж"], 
+                exp: "Trạng động từ 'Бывая' đổi thành mệnh đề thời gian 'Когда'." 
+            },
+            { 
+                q: "40. Из-за сильного тумана самолёты сегодня не могут летать. \n=> Самолёты сегодня не могут летать, ...", 
+                ans: ["так как сильный туман", "потому что сильный туман", "потому что стоит сильный туман"], 
+                exp: "Cụm nguyên nhân 'Из-за' chuyển thành mệnh đề nguyên nhân." 
+            },
+            { 
+                q: "41. Одним из видов войск являются Военно-Морские Силы, включающие в себя корабли и суда вспомогательного флота. \n=> Одним из видов войск являются Военно-Морские Силы, ...", 
+                ans: ["которые включают в себя корабли и суда вспомогательного флота"], 
+                exp: "Đổi Tính động từ 'включающие' thành mệnh đề 'которые включают'." 
+            },
+            { 
+                q: "42. Мать увидела сына и плакала от радости. \n=> Мать увидела сына и плакала, ...", 
+                ans: ["потому что была рада", "потому что радовалась", "так как радовалась"], 
+                exp: "Cụm danh từ 'от радости' chuyển thành mệnh đề giải thích nguyên nhân trạng thái." 
+            }
+        ];
+
+
+       // ==========================================
+        // CÁC BIẾN VÀ LOGIC HOẠT ĐỘNG
+        // ==========================================
+        let timeRemaining = 120 * 60;
+        let timerInterval = null;
+        let isSubmitted = false;
+        let historyData = [];
+        let quizNumber = 0;
+        let currentUser = "";
+        let totalQuestions = 0; // Biến đếm tổng số câu
+
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function generateNewQuiz(isInitialLoad = false) {
+            if (!isInitialLoad && !isSubmitted) {
+                if (!confirm("Bạn chưa nộp bài! Hệ thống sẽ tự động nộp bài hiện tại trước khi tạo đề mới. Bạn đồng ý chứ?")) return;
+                submitQuiz();
+            }
+
+            quizNumber++;
+            isSubmitted = false;
+            currentUser = "";
+            document.getElementById('score-display').style.display = 'none';
+            document.getElementById('submit-btn').disabled = false;
+            document.getElementById('submit-btn').innerText = "NỘP BÀI & CHẤM ĐIỂM";
+            
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            
+            const selectedListening = shuffleArray(listeningBank)[0];
+            const final40MCQs = shuffleArray([...shuffleArray(imageMcqBank).slice(0, 5), ...shuffleArray(mcqBank).slice(0, 35)]);
+            const selectedReading = shuffleArray(readingBank)[0];
+            const selectedRewrites = shuffleArray(rewriteBank).slice(0, 5);
+
+            // Tính tổng số câu hỏi để tạo Bảng theo dõi
+            totalQuestions = selectedListening.questions.length + final40MCQs.length + selectedReading.questions.length + selectedRewrites.length;
+
+            let html = `<h2 class="section-title">PHẦN 1: NGHE HIỂU (АУДИРОВАНИЕ)</h2>
+                <div class="question-card" style="border-left-color: #805ad5;">
+                    <div class="question-title" style="font-weight:bold;">${selectedListening.title}</div>
+                    <audio controls class="audio-player" style="width:100%; margin-top:10px;"><source src="${selectedListening.audioSrc}"></audio>
+                    <div id="listening-transcript" style="display:none; margin-top:10px;">${selectedListening.transcript || ''}</div>
+                </div>`;
+            
+            let qIdx = 1; // Biến đếm số thứ tự câu xuyên suốt
+            selectedListening.questions.forEach(item => html += renderMCQ(item, qIdx++));
+            
+            html += `<h2 class="section-title">PHẦN 2: TRẮC NGHIỆM TỪ VỰNG NGỮ PHÁP</h2>`;
+            final40MCQs.forEach(item => html += renderMCQ(item, qIdx++));
+
+            html += `<h2 class="section-title">PHẦN 3: ĐỌC HIỂU (ЧТЕНИЕ)</h2><div class="question-card">${selectedReading.content}</div>`;
+            selectedReading.questions.forEach(item => html += renderMCQ(item, qIdx++));
+
+            html += `<h2 class="section-title">PHẦN 4: VIẾT LẠI CÂU (ПИСЬМО)</h2>`;
+            selectedRewrites.forEach(item => {
+                html += `<div class="question-card rewrite-q" id="q-${qIdx}" data-ans='${JSON.stringify(item.ans)}'>
+                    <button class="flag-btn" onclick="toggleFlag(${qIdx}, this)">🚩 Đánh dấu</button>
+                    <b>Câu ${qIdx}:</b> ${item.q.replace('\n','<br>')}
+                    <input type="text" placeholder="Nhập câu trả lời của bạn vào đây..." style="width:100%; padding:10px; margin-top:10px; font-size:15px;" oninput="markAnswered(${qIdx}, this.value)">
+                    <div class="explanation"><b>Đáp án đúng:</b> ${item.ans[0]}<br>${item.exp}</div>
+                </div>`;
+                qIdx++;
+            });
+
+            container.innerHTML = html;
+            
+            // Gọi hàm tạo Bảng theo dõi
+            initTracker(totalQuestions);
+
+            clearInterval(timerInterval);
+            document.getElementById('timer-display').innerText = "120:00";
+            document.getElementById('modal-title').innerText = `ĐỀ SỐ ${quizNumber}`;
+            document.getElementById('header-title').innerText = `ĐỀ SỐ ${quizNumber} | Đang chờ...`;
+            document.getElementById('start-modal').style.display = 'flex';
+            document.getElementById('student-name').value = '';
+            document.getElementById('student-name').focus();
+        }
+
+        window.startQuizAfterName = function() {
+            let nameInput = document.getElementById('student-name').value.trim();
+            if (nameInput === "") { alert("Vui lòng nhập họ và tên của bạn để bắt đầu làm bài!"); return; }
+            currentUser = nameInput;
+            document.getElementById('header-title').innerText = `ĐỀ SỐ ${quizNumber} | Thí sinh: ${currentUser}`;
+            document.getElementById('start-modal').style.display = 'none';
+            startTimer();
+        }
+
+        function renderMCQ(item, idx) {
+            let img = item.imageSrc ? `<br><img src="${item.imageSrc}" class="question-image">` : '';
+            let opts = shuffleArray(item.options.map((t, i) => ({t, is: i === item.answer})));
+            return `<div class="question-card mcq-q" id="q-${idx}">
+                <button class="flag-btn" onclick="toggleFlag(${idx}, this)">🚩 Đánh dấu</button>
+                <b>Câu ${idx}:</b> ${item.q.replace('\n','<br>')}${img}
+                <div class="options-list">${opts.map(o => `<button class="option-btn" data-is="${o.is}" onclick="sel(this, ${idx})">${o.t}</button>`).join('')}</div>
+                <div class="explanation">${item.explanation || item.exp}</div>
+            </div>`;
+        }
+
+        // Cập nhật hàm chọn đáp án để truyền số thứ tự câu (idx)
+        window.sel = (b, idx) => { 
+            if(!isSubmitted) { 
+                b.parentElement.querySelectorAll('.option-btn').forEach(x => x.classList.remove('selected')); 
+                b.classList.add('selected'); 
+                markAnswered(idx); // Kích hoạt đổi màu bảng theo dõi
+            } 
+        };
+
+        // ==========================================
+        // CÁC HÀM CHO BẢNG THEO DÕI VÀ CẮM CỜ
+        // ==========================================
+        window.initTracker = (total) => {
+            let trackerGrid = document.getElementById('tracker-grid');
+            let html = '';
+            for(let i = 1; i <= total; i++) {
+                html += `<div class="tracker-btn" id="track-${i}" onclick="scrollToQ(${i})">${i}</div>`;
+            }
+            trackerGrid.innerHTML = html;
+            document.getElementById('question-tracker').style.display = 'block';
+        };
+
+        window.scrollToQ = (idx) => {
+            const qCard = document.getElementById(`q-${idx}`);
+            if(qCard) {
+                const headerOffset = 80;
+                const elementPosition = qCard.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+            }
+        };
+
+        window.markAnswered = (idx, val = null) => {
+            let btn = document.getElementById(`track-${idx}`);
+            if(!btn) return;
+            if(val !== null && val.trim() === "") btn.classList.remove('answered'); // Xóa màu nếu xóa text
+            else btn.classList.add('answered');
+        };
+
+        window.toggleFlag = (idx, btnElem) => {
+            let trackBtn = document.getElementById(`track-${idx}`);
+            if(!trackBtn) return;
+            trackBtn.classList.toggle('flagged');
+            btnElem.classList.toggle('active');
+            if(btnElem.classList.contains('active')) btnElem.innerHTML = "🚩 Đã đánh dấu";
+            else btnElem.innerHTML = "🚩 Đánh dấu";
+        };
+
+        // ==========================================
+        // NỘP BÀI VÀ CÁC CHỨC NĂNG CÒN LẠI
+        // ==========================================
+        window.submitQuiz = () => {
+            if (isSubmitted) return;
+            isSubmitted = true;
+            clearInterval(timerInterval);
+            
+            let correct = 0, total = 0;
+            const container = document.getElementById('quiz-container');
+            
+            container.querySelectorAll('.mcq-q').forEach(q => {
+                total++;
+                q.querySelectorAll('.option-btn').forEach(b => {
+                    b.disabled = true;
+                    if(b.dataset.is === "true") b.classList.add('show-correct');
+                    if(b.classList.contains('selected')) {
+                        if(b.dataset.is === "true") { b.classList.add('correct'); correct++; }
+                        else b.classList.add('wrong');
+                    }
+                });
+                q.querySelector('.explanation').style.display = 'block';
+            });
+
+            container.querySelectorAll('.rewrite-q').forEach(q => {
+                total++;
+                let input = q.querySelector('input'), user = input.value.trim().toLowerCase().replace(/[,.]/g, '');
+                input.disabled = true;
+                let answers = JSON.parse(q.dataset.ans).map(a => a.toLowerCase().replace(/[,.]/g, ''));
+                if(answers.includes(user)) { correct++; input.style.background = '#c6f6d5'; }
+                else input.style.background = '#fed7d7';
+                q.querySelector('.explanation').style.display = 'block';
+            });
+
+            if(document.getElementById('listening-transcript')) document.getElementById('listening-transcript').style.display = 'block';
+
+            let score = Math.round((correct/total)*100);
+            let scoreHtml = `<h1>Điểm: ${score}/100</h1><h3>Đúng ${correct}/${total} câu</h3>`;
+            document.getElementById('score-display').innerHTML = scoreHtml;
+            document.getElementById('score-display').style.display = 'block';
+            document.getElementById('submit-btn').innerText = "ĐÃ NỘP BÀI";
+            document.getElementById('submit-btn').disabled = true;
+            
+            historyData.push({ quizNum: quizNumber, name: currentUser, date: new Date().toLocaleString(), scoreHtml: scoreHtml, quizHtml: document.getElementById('quiz-container').innerHTML });
+            window.scrollTo(0,0);
+        };
+
+        function startTimer() { 
+            clearInterval(timerInterval); 
+            timeRemaining = 120*60; 
+            timerInterval = setInterval(() => {
+                timeRemaining--; let m = Math.floor(timeRemaining/60), s = timeRemaining%60;
+                document.getElementById('timer-display').innerText = `${m}:${s<10?'0':''}${s}`;
+                if(timeRemaining<=0) submitQuiz();
+            }, 1000); 
+        }
+
+        window.toggleHistory = () => { 
+            document.getElementById('quiz-view').style.display = 'none'; 
+            document.getElementById('question-tracker').style.display = 'none'; // Ẩn bảng khi xem lịch sử
+            document.getElementById('history-view').style.display = 'block'; 
+            window.scrollTo(0, 0); 
+            
+            let list = document.getElementById('history-list'); 
+            list.innerHTML = historyData.length ? historyData.map((h, i) => 
+                `<button class="history-item-btn" onclick="showHist(${i})">📄 Đề số ${h.quizNum} - Thí sinh: <b>${h.name}</b> - Ngày: ${h.date}</button>`
+            ).join('') : '<p style="text-align:center;">Chưa có dữ liệu bài thi nào.</p>'; 
+        };
+        
+        window.showHist = (i) => { 
+            const detail = document.getElementById('history-detail');
+            detail.innerHTML = `<hr style="margin:30px 0; border:1px solid #cbd5e0;"><h3 style="text-align:center; color:#2c5282;">CHI TIẾT ĐỀ ${historyData[i].quizNum} - Thí sinh: ${historyData[i].name}</h3><div>${historyData[i].scoreHtml}${historyData[i].quizHtml}</div>`; 
+            window.scrollTo(0, 0); 
+            const audios = detail.querySelectorAll('audio'); audios.forEach(a => a.controls = true);
+        };
+        
+        window.backToQuiz = () => { 
+            document.getElementById('history-view').style.display = 'none'; 
+            document.getElementById('quiz-view').style.display = 'block'; 
+            document.getElementById('question-tracker').style.display = 'block'; // Hiện lại bảng
+            window.scrollTo(0, 0);
+        };
+
+        window.onscroll = function() {
+            let topBtn = document.getElementById("back-to-top");
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) topBtn.style.display = "block";
+            else topBtn.style.display = "none";
+        };
+
+        window.scrollToTop = function() { window.scrollTo({ top: 0, behavior: 'smooth' }); };
+        
+        window.onload = () => {
+            let pass = prompt("HỆ THỐNG BẢO MẬT: \nVui lòng nhập mật khẩu để truy cập bộ đề:");
+            if(pass !== "123456") { document.body.innerHTML = "<h1 style='text-align:center; margin-top:20%; color:#e53e3e; font-family:sans-serif;'>MẬT KHẨU SAI!<br>BẠN KHÔNG CÓ QUYỀN TRUY CẬP ĐỀ THI NÀY.</h1>"; return; }
+            const nameInput = document.getElementById('student-name');
+            if(nameInput) { nameInput.addEventListener('keypress', function (e) { if (e.key === 'Enter') startQuizAfterName(); }); }
+            generateNewQuiz(true);
+        };
+    </script>
+</body>
+</html>
